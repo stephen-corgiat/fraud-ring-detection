@@ -6,7 +6,7 @@
     <h1>{{ cfg.title }}</h1>
     <div class="lede">{{ pitch }}</div>
     {% if demo %}
-    <video class="demo" muted loop playsinline preload="metadata" poster="{{ root }}images/site/demo-poster.png"
+    <video class="demo" controls muted loop playsinline preload="metadata" poster="{{ root }}images/site/demo-poster.png"
            aria-label="A recorded session: triage a suspect creator, hand its core to the investigator, recover the ring, then the temporal view.">
       <source src="{{ root }}images/site/demo.webm" type="video/webm">
       <source src="{{ root }}images/site/demo.mp4" type="video/mp4">

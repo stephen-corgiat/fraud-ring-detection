@@ -271,7 +271,9 @@ Investigate page.
 
 - **The serialized ring (left)** takes turns on its four lanes, so occupancy flattens into a plateau
   hugging the cap. Peak simultaneity: **4**, across 126 accounts.
-- **The bandwagon (right)** piles on freely and spikes well above the line. Peak: **13**.
+- **The bandwagon (right)** piles on freely and spikes well above the line. Peak: **13** for this cohort;
+  the world's four cohorts average about 11, the figure
+  [ADR 0004](adr/0004-lockstep-serialization-is-not-recoverable.md) quotes.
 
 Below each strip in the screenshot (the site's interactive version shows the strips alone), the
 **event raster** has one row per account, ordered by when each account first appears — never by

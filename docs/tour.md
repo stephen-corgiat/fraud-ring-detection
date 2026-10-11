@@ -38,7 +38,7 @@ organic popularity rarely does.
 
 1. **suspect creators**: every creator above the impact floor, ranked.
 2. **ring targets in top 16**: with ground truth on, how many of the creators the rings were paid to boost
-   land in the top 16 rows, twice the number of targets.
+   land in the top 16 rows (16 is twice the number of targets).
 3. **The queue**: one row per creator, with its suspicion score, its tags and, if truth is on, what it really
    is. Tags describe the shape of the audience. They are never a verdict.
 4. **inspect rank**: pick any row to read the evidence behind it.

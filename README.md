@@ -65,7 +65,9 @@ core — generator, detector, sweep — needs neither.
 
 ## Try it
 
-No install needed: the [live demo](https://fraud-ring-detection.streamlit.app/ "May take about 30 seconds to wake if it has been idle") runs the same app on simulated data (your labels stay in your tab). To run it on your own machine:
+No install needed: the
+[live demo](https://fraud-ring-detection.streamlit.app/ "May take about 30 seconds to wake if it has been idle")
+runs the same app on simulated data, and your labels stay in your tab. To run it on your own machine:
 
 ```sh
 fraudrings view
