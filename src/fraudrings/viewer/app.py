@@ -23,6 +23,7 @@ from fraudrings.viewer import charts as C
 from fraudrings.viewer import data as D
 from fraudrings.viewer import data_triage as R
 from fraudrings.viewer import labels as L
+from fraudrings.viewer import session as S
 from fraudrings.viewer import theme as T
 from fraudrings.viewer.raster import RasterData
 
@@ -71,7 +72,7 @@ def page() -> None:
     world: D.World = st.session_state["world"]
     show_truth: bool = st.session_state["show_truth"]
     level = world.level
-    store = L.store_for_world(world.world_dir)
+    store = S.label_store(world.world_dir)
 
     # --- top bar (mirrors the sidebar ground-truth state) ------------------
     T.top_bar(world.n_accounts, world.n_fraud, show_truth)

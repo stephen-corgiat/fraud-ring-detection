@@ -45,12 +45,18 @@ class ScoreSummary:
 
 
 class LabelStore:
-    """Append/overwrite human labels in a JSON file alongside the world's data."""
+    """Append/overwrite human labels in a JSON file alongside the world's data.
 
-    def __init__(self, path: str) -> None:
+    Pass `backing` (a dict) for an in-memory store instead: labels live in that dict and nothing
+    touches disk. The hosted demo hands it a per-session dict so visitors never share labels.
+    """
+
+    def __init__(self, path: str, backing: dict[int, dict] | None = None) -> None:
         self.path = path
-        self._labels: dict[int, dict] = {}
-        self._load()
+        self._memory = backing is not None
+        self._labels: dict[int, dict] = backing if backing is not None else {}
+        if not self._memory:
+            self._load()
 
     def _load(self) -> None:
         if os.path.exists(self.path):
@@ -59,6 +65,8 @@ class LabelStore:
             self._labels = {int(k): v for k, v in raw.items()}
 
     def _flush(self) -> None:
+        if self._memory:
+            return
         os.makedirs(os.path.dirname(self.path) or ".", exist_ok=True)
         with open(self.path, "w") as f:
             json.dump({str(k): v for k, v in self._labels.items()}, f, indent=2, sort_keys=True)

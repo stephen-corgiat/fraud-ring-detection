@@ -19,6 +19,7 @@ import streamlit as st
 from fraudrings.viewer import app as investigate
 from fraudrings.viewer import app_triage as triage
 from fraudrings.viewer import data as D
+from fraudrings.viewer import session as S
 from fraudrings.viewer import theme as T
 
 LEVELS = ["naive", "moderate", "sophisticated"]
@@ -37,7 +38,12 @@ def _cli_args() -> tuple[str, bool]:
     return args.data_dir, args.rebuild
 
 
-@st.cache_resource(show_spinner="Building world (generate → ingest)…")
+HOSTED = S.hosted()  # read once per script run; `streamlit_app.py` sets the env before importing
+
+
+# Hosted: bound the cache so visitors browsing many worlds can't exhaust the host's memory.
+@st.cache_resource(show_spinner="Building world (generate → ingest)…",
+                   max_entries=S.HOSTED_MAX_WORLDS if HOSTED else None)
 def _world(preset: str, level: str, seed: int, cotarget: bool, base_dir: str,
            concurrency: int | None, rebuild: bool) -> D.World:
     return D.load_world(
@@ -88,7 +94,7 @@ def _world_sidebar(base_dir: str, rebuild: bool) -> None:
     if st.session_state.get("_world_dir") != world.world_dir:  # a new world invalidates the handoff
         st.session_state["_world_dir"] = world.world_dir
         st.session_state.pop("handoff", None)
-    st.session_state["world"] = world
+    st.session_state["world"] = S.session_world(world)
     st.session_state["show_truth"] = show_truth
 
 
@@ -96,6 +102,8 @@ def main() -> None:
     st.set_page_config(page_title="fraudrings", layout="wide")
     T.inject()
     T.register_plotly_template()
+    if HOSTED:
+        st.caption("Public demo on simulated data. Your labels stay in this tab.")
     base_dir, rebuild = _cli_args()
 
     pages = {

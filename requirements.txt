@@ -1,0 +1,11 @@
+# Exists only for Streamlit Community Cloud (it reads this file in preference to pyproject.toml).
+# Locally, install with `pip install -e ".[viz]"`. Kept in step with pyproject.toml's core + viz deps;
+# `streamlit_app.py` puts src/ on sys.path, so the package itself needn't be installed.
+pydantic>=2.6
+duckdb>=0.10
+polars>=0.20
+numpy>=1.26
+streamlit>=1.50
+pandas>=2.0
+plotly>=5.0
+networkx>=3.2

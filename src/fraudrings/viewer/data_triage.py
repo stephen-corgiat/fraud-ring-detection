@@ -200,16 +200,21 @@ class SuspectLabelStore:
 
     Mirrors `viewer.labels.LabelStore` but keyed by creator. The `suspicion` and `rank` captured at
     label time let a later pass compute precision-at-K over the human's calls.
+
+    Pass `backing` (a dict) for an in-memory store that never touches disk (the hosted demo).
     """
 
-    def __init__(self, path: str) -> None:
+    def __init__(self, path: str, backing: dict[int, dict] | None = None) -> None:
         self.path = path
-        self._labels: dict[int, dict] = {}
-        if os.path.exists(path):
+        self._memory = backing is not None
+        self._labels: dict[int, dict] = backing if backing is not None else {}
+        if not self._memory and os.path.exists(path):
             with open(path) as f:
                 self._labels = {int(k): v for k, v in json.load(f).items()}
 
     def _flush(self) -> None:
+        if self._memory:
+            return
         os.makedirs(os.path.dirname(self.path) or ".", exist_ok=True)
         with open(self.path, "w") as f:
             json.dump({str(k): v for k, v in self._labels.items()}, f, indent=2, sort_keys=True)

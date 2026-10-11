@@ -21,6 +21,7 @@ from fraudrings.detector.concentration import SuspectTarget, maybe_expand
 from fraudrings.viewer import charts as C
 from fraudrings.viewer import data as D
 from fraudrings.viewer import data_triage as R
+from fraudrings.viewer import session as S
 from fraudrings.viewer import theme as T
 
 
@@ -143,7 +144,7 @@ def page() -> None:
     world: D.World = st.session_state["world"]
     show_truth: bool = st.session_state["show_truth"]
     wd = world.world_dir
-    store = R.store_for_world(wd)
+    store = S.suspect_label_store(wd)
     truth = _truth(wd, world) if show_truth else None
     sort_by, cap, impact_floor, top_n = _sidebar(world, store, truth)
 
