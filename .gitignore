@@ -16,3 +16,4 @@ venv/
 
 # Local scratch space
 .scratch/
+/_site/

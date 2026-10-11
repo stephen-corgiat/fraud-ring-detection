@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block body_class %}doc{% endblock %}
+{% block main %}
+<main class="prose">
+  <h1>Page not found</h1>
+  <p>That page doesn't exist. Try the <a href="{{ root }}./">home page</a>, the
+  <a href="{{ root }}walkthrough.html">walkthrough</a> or the
+  <a href="{{ cfg.live_app_url }}" rel="noopener">live app</a>.</p>
+</main>
+{% endblock %}

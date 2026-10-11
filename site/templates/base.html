@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }}</title>
+  <meta name="description" content="{{ description }}">
+  <link rel="canonical" href="{{ canonical }}">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{ title }}">
+  <meta property="og:description" content="{{ description }}">
+  <meta property="og:url" content="{{ canonical }}">
+  <meta name="twitter:card" content="{{ 'summary_large_image' if og_image else 'summary' }}">
+  <meta name="twitter:title" content="{{ title }}">
+  <meta name="twitter:description" content="{{ description }}">
+{% if og_image %}
+  <meta property="og:image" content="{{ og_image }}">
+  <meta name="twitter:image" content="{{ og_image }}">
+{% endif %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="{{ root }}assets/nav.css">
+  <link rel="stylesheet" href="{{ root }}assets/site.css">
+{% if charts %}
+  <script defer src="{{ plotly_url }}"></script>
+{% endif %}
+  <script defer src="{{ root }}assets/site.js"></script>
+</head>
+<body class="{% block body_class %}{% endblock %}">
+{% include "nav.html" %}
+{% block main %}{% endblock %}
+<footer class="site-footer">
+  <p>Apache-2.0 · <a href="{{ cfg.repo_url }}" rel="noopener">GitHub</a> ·
+  Built from the repo's markdown by <a href="{{ cfg.repo_url }}/blob/{{ cfg.repo_branch }}/scripts/build_site.py" rel="noopener">one Python script</a>;
+  every number comes from a committed results file or the seeded demo world.</p>
+</footer>
+</body>
+</html>

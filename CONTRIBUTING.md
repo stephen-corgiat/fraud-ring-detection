@@ -6,7 +6,7 @@ You need Python 3.11+.
 
 ```sh
 python -m venv .venv
-.venv/bin/python -m pip install -e ".[dev,viz,ml]"
+.venv/bin/python -m pip install -e ".[dev,viz,ml,site]"
 ```
 
 | Extra | Adds | Needed for |

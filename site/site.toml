@@ -1,0 +1,9 @@
+# Settings for scripts/build_site.py. Every "live app" link on the site is built from live_app_url.
+title = "fraud-ring-detection"
+tagline = "A seeded simulator, reference detector and evaluation harness for coordinated fraud rings."
+description = "Watch a detector find coordinated fraud rings in a simulated platform, then open the real app and try it yourself. It measures how well you catch rings against an adversary that tries harder and harder to look organic, without a single real label."
+site_url = "https://stephen-corgiat.github.io/fraud-ring-detection/"
+live_app_url = "https://fraud-ring-detection.streamlit.app"
+repo_url = "https://github.com/stephen-corgiat/fraud-ring-detection"
+repo_branch = "master"
+plotly_version = "4.1.1"

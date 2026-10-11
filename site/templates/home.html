@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block body_class %}home{% endblock %}
+{% block main %}
+<main>
+  <section class="hero">
+    <h1>{{ cfg.title }}</h1>
+    <p class="lede">{{ cfg.tagline }}</p>
+    <p class="buttons">
+      <a class="btn primary" href="{{ cfg.live_app_url }}" rel="noopener" title="If the app has been idle it may take about 30 seconds to wake.">Try the live app ↗</a>
+      <a class="btn" href="{{ root }}walkthrough.html">Read the walkthrough</a>
+      <a class="btn" href="{{ cfg.repo_url }}" rel="noopener">GitHub ↗</a>
+    </p>
+    <p class="note">The live app is free-tier: if it has been idle, it may take about 30 seconds to wake.</p>
+  </section>
+  <section class="cards">
+    <h2>Go deeper</h2>
+    <div class="grid">
+      <a class="card" href="{{ root }}walkthrough.html"><h3>Walkthrough</h3><p>An illustrated case, from triage to a recovered ring.</p></a>
+      <a class="card" href="{{ root }}explainer/"><h3>Lessons</h3><p>The detector in seven plain-language lessons, each with a quiz.</p></a>
+      <a class="card" href="{{ root }}research/"><h3>Research</h3><p>How to measure a detector without real labels, and what the literature says.</p></a>
+      <a class="card" href="{{ root }}adr/"><h3>Decisions</h3><p>The design decisions, and what each one cost.</p></a>
+    </div>
+  </section>
+</main>
+{% endblock %}

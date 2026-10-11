@@ -1,0 +1,9 @@
+<header class="site-nav" id="site-nav">
+  <a class="brand" href="{{ root }}./"><span class="dot"></span>fraudrings</a>
+  <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="site-links">☰</button>
+  <nav id="site-links" class="links">
+{% for item in nav %}
+    <a href="{{ item.href }}"{% if item.active %} class="active" aria-current="page"{% endif %}{% if item.external %} rel="noopener"{% endif %}{% if item.title %} title="{{ item.title }}"{% endif %}>{{ item.label }}</a>
+{% endfor %}
+  </nav>
+</header>
