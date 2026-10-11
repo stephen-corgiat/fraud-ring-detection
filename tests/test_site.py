@@ -18,7 +18,7 @@ pytest.importorskip("jinja2")
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
-import build_site as B  # noqa: E402
+import build_site as B  # type: ignore[import-not-found]  # noqa: E402  # pyright: ignore[reportMissingImports]
 
 
 class _Scan(HTMLParser):
@@ -102,7 +102,7 @@ def test_lessons_are_unchanged_apart_from_the_nav(site: Path) -> None:
 
 
 def test_images_are_shown_at_half_size_and_lazy(site: Path) -> None:
-    imgs = [i for i in _scan(site / "walkthrough.html").imgs if i.get("src", "").endswith("02-triage-queue.png")]
+    imgs = [i for i in _scan(site / "walkthrough.html").imgs if (i.get("src") or "").endswith("02-triage-queue.png")]
     assert imgs
     w, h = B.image_size(ROOT / "docs/images/walkthrough/02-triage-queue.png") or (0, 0)
     assert (imgs[0]["width"], imgs[0]["height"]) == (str(w // 2), str(h // 2))
