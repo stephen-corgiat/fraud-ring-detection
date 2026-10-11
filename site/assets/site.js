@@ -44,6 +44,8 @@
     fetch(fig.dataset.src).then(function (r) { return r.json(); }).then(function (spec) {
       var host = document.createElement('div');
       host.className = 'plot';
+      // multi-panel charts stay readable on narrow screens by scrolling the figure sideways
+      if (spec.layout && spec.layout.xaxis2) host.style.minWidth = '640px';
       fig.insertBefore(host, fig.firstChild);
       var draw = function () {
         if (!window.Plotly) { host.remove(); fallback(fig); return; }

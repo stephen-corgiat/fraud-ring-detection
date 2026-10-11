@@ -26,7 +26,7 @@ img { max-width: 100%; height: auto; }
 .prose hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
 .prose img.zoom { display: block; margin: 1.2em auto; border: 1px solid var(--border); border-radius: 6px; cursor: zoom-in; }
 
-figure.chart { margin: 1.5em 0; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+figure.chart { overflow-x: auto; margin: 1.5em 0; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
 figure.chart[data-state="loading"] { min-height: 200px; }
 figure.chart figcaption { color: var(--mute); font-size: 0.85rem; margin-top: 8px; }
 
