@@ -10,6 +10,15 @@ harder to look organic, without needing a single real label.
 [Results](#results) · [How it's measured](#how-its-measured) · [Research](#research) ·
 [Layout](#layout)
 
+A **fraud ring** is a set of accounts controlled by one operator and made to look like many
+independent people. On a platform that pays creators per engagement, a ring pumps up chosen
+creators, often its own or paying clients, to collect payouts that no real audience earned. The same
+pattern drives fake reviews, ad click fraud, referral abuse and follower farms. No single account
+in a ring looks guilty: each views a few items, at plausible hours, from an ordinary-looking device.
+The ring shows only in what its accounts share: infrastructure, targets, habits, bursts in time. So
+catching one means judging accounts together, not one at a time. Careful operators know that, and
+they rotate IPs, jitter their timing, add cover traffic and age their accounts to blur the pattern.
+
 Labeled data for coordinated fraud is private everywhere, which makes most fraud detectors
 impossible to evaluate honestly. This project builds the world first: a platform where accounts view
 items published by creators, and creators are paid per qualified view. Fraud rings are injected to
