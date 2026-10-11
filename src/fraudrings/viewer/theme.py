@@ -167,6 +167,12 @@ hr { border-color: #1b2027 !important; }
 .ath-pill .knob i { position:absolute; top:1px; width:12px; height:12px; border-radius:50%; }
 .ath-pill .knob.on  { background:#3a5a8c; } .ath-pill .knob.on  i { right:1px; background:#cfe0f5; }
 .ath-pill .knob.off { background:#2a323d; } .ath-pill .knob.off i { left:1px; background:#6f7681; }
+.ath-brand .name, .ath-brand .sub, .ath-pill, .ath-topbar .meta .mono { white-space:nowrap; }
+@media (max-width: 640px) {
+  /* narrow screens: stack the brand over the stats instead of squeezing both onto one line */
+  .ath-topbar { flex-wrap:wrap; height:auto; padding:8px 12px; gap:6px 12px; }
+  .ath-topbar .meta { gap:10px; flex-wrap:wrap; }
+}
 
 .ath-crumb {
   display:flex; align-items:center; gap:10px; flex-wrap:wrap;
