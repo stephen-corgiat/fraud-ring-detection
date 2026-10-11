@@ -264,16 +264,17 @@ accounts at once, while a benign bandwagon piles onto the same creator in the sa
 The cap is the *only* difference between them. A **temporal raster** appears at the bottom of the
 Investigate page.
 
-![Temporal raster](images/walkthrough/30-temporal-raster.png)<!-- chart: temporal-occupancy -->
+![Simultaneous active accounts over time: the serialized ring (left) against an uncapped bandwagon (right), on one shared time axis.](images/walkthrough/30-temporal-raster.png)<!-- chart: temporal-occupancy -->
 
 **Occupancy** is how many accounts are active at the same moment.
 
 - **The serialized ring (left)** takes turns on its four lanes, so occupancy flattens into a plateau
   hugging the cap. Peak simultaneity: **4**, across 126 accounts.
-- **The bandwagon (right)** piles on freely and spikes well above the line. Peak: **11**.
+- **The bandwagon (right)** piles on freely and spikes well above the line. Peak: **13**.
 
-Below each strip, the **event raster** has one row per account, ordered by when each account first
-appears — never by ground truth, which would hand the eye the answer.
+Below each strip in the screenshot (the site's interactive version shows the strips alone), the
+**event raster** has one row per account, ordered by when each account first appears — never by
+ground truth, which would hand the eye the answer.
 
 A human reading these panels can confirm serialization. But no statistic computed from events
 recovers it where it would matter: at sophisticated levels, the retrieved set is too polluted for the

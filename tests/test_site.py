@@ -162,3 +162,21 @@ def test_broken_link_is_an_error(tmp_path: Path) -> None:
     docs = _mini_docs(tmp_path, "# T\n\n[gone](missing.md)\n")
     with pytest.raises(B.BuildError, match="broken link"):
         B.build(ROOT, tmp_path / "out", docs)
+
+
+def test_descriptions_keep_words_apart(site: Path) -> None:
+    """Hard-wrapped markdown must not fuse the words on either side of a line break."""
+    text = (site / "walkthrough.html").read_text()
+    assert "number below comes" in text.split('name="description" content="', 1)[1].split('"', 1)[0]
+
+
+def test_every_chart_directive_in_the_docs_is_consumed(site: Path) -> None:
+    wanted = sum(p.read_text().count("<!-- chart:") for p in (ROOT / "docs").rglob("*.md"))
+    got = sum(p.read_text().count('data-chart="') for p in site.rglob("*.html"))
+    assert wanted == got and wanted >= 4
+
+
+def test_nav_toggle_only_exists_with_js() -> None:
+    css = (ROOT / "site/assets/nav.css").read_text()
+    assert ".js .site-nav .nav-toggle { display: block; }" in css
+    assert ".site-nav .nav-toggle { display: none;" in css

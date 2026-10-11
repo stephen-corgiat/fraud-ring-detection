@@ -115,7 +115,13 @@ def image_size(path: Path) -> tuple[int, int] | None:
 
 
 def inline_text(tok: Token) -> str:
-    return "".join(c.content for c in (tok.children or []) if c.type in ("text", "code_inline"))
+    parts = []
+    for c in tok.children or []:
+        if c.type in ("text", "code_inline"):
+            parts.append(c.content)
+        elif c.type in ("softbreak", "hardbreak"):
+            parts.append(" ")
+    return "".join(parts)
 
 
 # --- the builder -------------------------------------------------------------------------------

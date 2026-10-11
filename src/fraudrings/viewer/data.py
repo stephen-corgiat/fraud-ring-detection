@@ -230,7 +230,10 @@ def bandwagon_clusters(world: World) -> list[ClusterInfo]:
     bw = world.gt.filter(pl.col("bandwagon_cluster_id").is_not_null())
     if bw.height == 0:
         return []
-    grouped = bw.group_by("bandwagon_cluster_id").agg(pl.len().alias("size")).sort("size", descending=True)
+    grouped = bw.group_by("bandwagon_cluster_id").agg(pl.len().alias("size"))
+    # cohorts often tie on size, and group_by order is not stable: break ties by id so the first
+    # cohort is the same on every run (the walkthrough and the site chart both show it)
+    grouped = grouped.sort(["size", "bandwagon_cluster_id"], descending=[True, False])
     return [
         ClusterInfo(cluster_id=int(r["bandwagon_cluster_id"]), size=int(r["size"]))
         for r in grouped.iter_rows(named=True)

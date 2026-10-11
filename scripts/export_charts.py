@@ -64,6 +64,9 @@ def triage_and_investigate(out: Path, preset_name: str, seed: int, base: str) ->
     cfg = ConcentrationConfig(sort_by="suspicion", cap=10,  # type: ignore[arg-type]
                               impact_floor=preset(preset_name).concentration.impact_floor)
     s = R.suspects(world.con, cfg)[0]  # rank 1, as in `?rank=1`
+    creator = s.target_id
+    # `?creator=N` (app.py `_deep_link_handoff`): the preset's concentration config, filtered to N.
+    handoff = next(x for x in R.suspects(world.con, preset(preset_name).concentration) if x.target_id == creator)
 
     _write(out, "triage-axes", C.suspect_axis_figure(s.pct_neff, s.pct_booster, s.pct_burst7),
            f"{tag}, rank 1 (creator {s.target_id})")
@@ -73,8 +76,7 @@ def triage_and_investigate(out: Path, preset_name: str, seed: int, base: str) ->
     _write(out, "triage-weekly", C.suspect_weekly_figure(R.weekly_qv(world.con, s.target_id)),
            f"{tag}, rank 1 (creator {s.target_id})")
 
-    # `?creator=<rank 1>`: the dedicated core's first five accounts become the seeds.
-    seeds = list(s.core)[:5]
+    seeds = list(handoff.core)[:5]  # the multiselect's default: the dedicated core's first five
     cands = D.investigate(world, seeds)
     set_ids = list(dict.fromkeys([*seeds, *(c.account_id for c in cands)]))[:CHART_SET_CAP]
     src = f"{tag}, creator {s.target_id} handoff ({len(set_ids)} accounts)"
@@ -92,23 +94,27 @@ def temporal(out: Path, preset_name: str, seed: int, base: str) -> None:
     clusters = D.bandwagon_clusters(world)
     if not clusters and preset_name == "default":
         raise SystemExit("the default world should have a bandwagon cluster to compare against")
-    members = {f"ring {ring_id} (serialized)": (ring_mem, RING)}
+    panels = [(f"ring {ring_id} (serialized)", ring_mem, RING)]
+    t0 = t1 = None
     if clusters:
-        members[f"bandwagon {clusters[0].cluster_id} (uncapped)"] = (
-            D.bandwagon_members(world, clusters[0].cluster_id), NEUTRAL)
-    t0, t1 = _shared_window(world, *(m for m, _ in members.values())) if clusters else (None, None)
-    fig = go.Figure()
-    for i, (title, (accounts, color)) in enumerate(members.items()):
+        band = clusters[0]
+        panels.append((f"bandwagon {band.cluster_id} (uncapped)", D.bandwagon_members(world, band.cluster_id), NEUTRAL))
+        t0, t1 = _shared_window(world, ring_mem, panels[1][1])
+    fig = make_subplots(rows=1, cols=len(panels), shared_yaxes=True, horizontal_spacing=0.04,
+                        subplot_titles=[title for title, _, _ in panels])
+    for col, (_title, accounts, color) in enumerate(panels, 1):
         rd = D.account_raster(world, accounts, bucket_seconds=BUCKET_SECONDS, t0=t0, t1=t1)
-        panel = C.occupancy_figure(rd, world.concurrency, color)
-        trace = panel.data[0]
-        trace.name, trace.showlegend = title, True
-        fig.add_trace(trace)
-        if i == 0:
-            fig.layout.shapes, fig.layout.annotations = panel.layout.shapes, panel.layout.annotations
-            fig.layout.xaxis.title, fig.layout.yaxis.title = panel.layout.xaxis.title, panel.layout.yaxis.title
-    fig.update_layout(height=320, margin=dict(l=10, r=10, t=10, b=30), showlegend=True,
-                      legend=dict(orientation="h", y=1.1, x=0))
+        trace = C.occupancy_figure(rd, world.concurrency, color).data[0]  # the app's own occupancy trace
+        trace.showlegend = False
+        fig.add_trace(trace, row=1, col=col)
+        if world.concurrency is not None:  # the app draws its cap line the same way
+            fig.add_hline(y=world.concurrency, line=dict(color="red", dash="dash", width=1),
+                          annotation_text=f"cap C={world.concurrency}", annotation_position="top left",
+                          row=1, col=col)
+    fig.update_annotations(font_size=12)
+    fig.update_xaxes(title_text="minutes from window start")
+    fig.update_yaxes(title_text="simultaneous accounts", col=1)
+    fig.update_layout(height=320, margin=dict(l=10, r=10, t=40, b=30), showlegend=False)
     _write(out, "temporal-occupancy", fig, f"{preset_name}/sophisticated conc=4 seed={seed}, ring {ring_id}")
 
 

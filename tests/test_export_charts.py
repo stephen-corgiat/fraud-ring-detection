@@ -28,6 +28,12 @@ def test_smoke_export_produces_every_chart(tmp_path: Path) -> None:
         assert (out / f"{name}.json").stat().st_size < 250_000, name
 
 
+def test_investigate_charts_follow_the_creator_one_handoff() -> None:
+    """The walkthrough's `?creator=1` handoff: creator 1 is the default world's rank-1 suspect."""
+    doc = json.loads((ROOT / "docs" / "charts" / "investigate-linkage.json").read_text())
+    assert "creator 1 handoff" in doc["source"] and doc["source"].startswith("default/naive seed=7")
+
+
 def test_committed_charts_match_the_pinned_plotlyjs() -> None:
     """The site pins one plotly.js; every committed chart must have been exported for it."""
     import tomllib

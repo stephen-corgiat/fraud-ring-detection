@@ -27,6 +27,17 @@
     document.body.appendChild(box);
   });
 
+  // If a chart can't be drawn (CDN blocked, bad JSON), show the PNG kept in <noscript> instead.
+  function fallback(fig) {
+    fig.dataset.state = 'failed';
+    var ns = fig.querySelector('noscript');
+    if (!ns) return;
+    var holder = document.createElement('div');
+    holder.innerHTML = ns.textContent;
+    var img = holder.firstChild;
+    if (img) { img.className = 'zoom'; fig.insertBefore(img, fig.firstChild); }
+  }
+
   function render(fig) {
     if (fig.dataset.state) return;
     fig.dataset.state = 'loading';
@@ -35,11 +46,14 @@
       host.className = 'plot';
       fig.insertBefore(host, fig.firstChild);
       var draw = function () {
-        window.Plotly.newPlot(host, spec.data, spec.layout || {}, { responsive: true, displaylogo: false });
-        fig.dataset.state = 'done';
+        if (!window.Plotly) { host.remove(); fallback(fig); return; }
+        try {
+          window.Plotly.newPlot(host, spec.data, spec.layout || {}, { responsive: true, displaylogo: false });
+          fig.dataset.state = 'done';
+        } catch (e) { host.remove(); fallback(fig); }
       };
       if (window.Plotly) draw(); else window.addEventListener('load', draw);
-    }).catch(function () { fig.dataset.state = 'failed'; });
+    }).catch(function () { fallback(fig); });
   }
 
   var figs = document.querySelectorAll('figure.chart[data-chart]');

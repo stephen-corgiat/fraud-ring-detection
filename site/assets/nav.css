@@ -15,7 +15,7 @@
   color: #e6e9ee; font-size: 18px; padding: 4px 10px; cursor: pointer; }
 @media (max-width: 760px) {
   .site-nav { padding: 6px 16px; }
-  .site-nav .nav-toggle { display: block; }
+  .js .site-nav .nav-toggle { display: block; }
   /* without JS the links simply wrap and stay visible; with JS (.js on <html>) they collapse */
   .js .site-nav .links { display: none; width: 100%; flex-direction: column; padding-bottom: 8px; }
   .js .site-nav.open .links { display: flex; }

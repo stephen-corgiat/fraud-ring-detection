@@ -151,3 +151,14 @@ def test_label_store_roundtrip_and_scoring(tmp_path) -> None:
 
     reloaded.clear(int(legit_ids[2]))
     assert L.store_for_world(w.world_dir).counts()["unsure"] == 0
+
+
+def test_bandwagon_clusters_break_size_ties_by_id() -> None:
+    """Equal-size cohorts must come back in the same order every time (group_by order isn't stable)."""
+    gt = pl.DataFrame({
+        "account_id": list(range(12)),
+        "bandwagon_cluster_id": [2, 2, 3, 3, 0, 0, 1, 1, None, None, None, None],
+    })
+    world = D.World(con=None, engine=None, gt=gt, world_dir="", preset_name="smoke",  # type: ignore[arg-type]
+                    level="naive", seed=0)
+    assert [c.cluster_id for c in D.bandwagon_clusters(world)] == [0, 1, 2, 3]
