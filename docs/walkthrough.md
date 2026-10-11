@@ -204,7 +204,7 @@ and never feed scoring.
 - **Co-target heatmap** — one bright column, creator 1. Everyone in the ring is paid to watch the same
   creator.
 
-![Linkage subgraph](images/walkthrough/15-linkage.png)
+![Linkage subgraph](images/walkthrough/15-linkage.png)<!-- chart: investigate-linkage -->
 
 The **linkage subgraph** draws the primary evidence: accounts as nodes, shared gated identifiers as
 edges. The ring is one densely wired clump. You can **lasso** nodes on this chart (or the action
@@ -264,7 +264,7 @@ accounts at once, while a benign bandwagon piles onto the same creator in the sa
 The cap is the *only* difference between them. A **temporal raster** appears at the bottom of the
 Investigate page.
 
-![Temporal raster](images/walkthrough/30-temporal-raster.png)
+![Temporal raster](images/walkthrough/30-temporal-raster.png)<!-- chart: temporal-occupancy -->
 
 **Occupancy** is how many accounts are active at the same moment.
 

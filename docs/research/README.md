@@ -13,9 +13,8 @@ no labels, what the literature says, and what we'd tell anyone building one.
 
 ## What the results look like
 
-Every result is a curve over how hard the adversary tries to look organic. The left panel is the
-dial; the full numbers are in the [README](../../README.md#results).
+Every result is a curve over how hard the adversary tries to look organic. Hover for the numbers; the full tables are in the [README](../../README.md#results).
 
-![Three panels across the evasion dial: per-ring AP falls from 1.00 to 0.50 while operational precision stays near 0.95; on held-out rings the learned rule holds recall at about 1.00 while the hand-weighted score falls to 0.37; the seedless ranker puts 100%, 92% and 50% of ring targets near the head.](../images/results/dial.png)
+![Three panels across the evasion dial: per-ring AP falls from 1.00 to 0.50 while operational precision stays near 0.95; on held-out rings the learned rule holds recall at about 1.00 while the hand-weighted score falls to 0.37; the seedless ranker puts 100%, 92% and 50% of ring targets near the head.](../images/results/dial.png)<!-- chart: results-dial -->
 
-![Learning curve at the sophisticated level: recall crosses 80% at about 80 random labels and legit false positives drop below 5%; uncertainty sampling crosses recall earlier but its false-positive line wobbles back over 5%.](../images/results/learning_curve.png)
+![Learning curve at the sophisticated level: recall crosses 80% at about 80 random labels and legit false positives drop below 5%; uncertainty sampling crosses recall earlier but its false-positive line wobbles back over 5%.](../images/results/learning_curve.png)<!-- chart: results-learning-curve -->
