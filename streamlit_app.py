@@ -10,7 +10,9 @@ import sys
 os.environ["FRAUDRINGS_HOSTED"] = "1"
 # Keep native thread pools small on a shared, memory-capped host; must be set before polars loads.
 os.environ.setdefault("POLARS_MAX_THREADS", "2")
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "src"))
+SRC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "src")
+if SRC not in sys.path:  # Streamlit re-executes this file on every rerun
+    sys.path.insert(0, SRC)
 
 from fraudrings.viewer.main import main  # noqa: E402
 

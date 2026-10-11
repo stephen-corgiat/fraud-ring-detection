@@ -14,7 +14,7 @@ import streamlit as st
 
 from fraudrings.viewer import data as D
 from fraudrings.viewer import data_triage as R
-from fraudrings.viewer.labels import LabelStore
+from fraudrings.viewer import labels as L
 
 HOSTED_ENV = "FRAUDRINGS_HOSTED"
 # Hosted worlds kept in memory at once; each is a DuckDB connection plus its ground truth.
@@ -29,11 +29,11 @@ def _backing(kind: str, world_dir: str) -> dict[int, dict]:
     return st.session_state.setdefault(f"_labels:{kind}:{world_dir}", {})
 
 
-def label_store(world_dir: str) -> LabelStore:
+def label_store(world_dir: str) -> L.LabelStore:
     """Account-level labels (Investigate)."""
     if hosted():
-        return LabelStore(os.path.join(world_dir, "labels.json"), backing=_backing("account", world_dir))
-    return LabelStore(os.path.join(world_dir, "labels.json"))
+        return L.LabelStore(os.path.join(world_dir, "labels.json"), backing=_backing("account", world_dir))
+    return L.store_for_world(world_dir)
 
 
 def suspect_label_store(world_dir: str) -> R.SuspectLabelStore:
@@ -54,7 +54,7 @@ def session_world(world: D.World) -> D.World:
     """
     key = "_cursor"
     held = st.session_state.get(key)
-    if held is None or held[0] != world.world_dir:
-        held = (world.world_dir, world.con.cursor())
+    if held is None or held[0] is not world.con:  # a rebuilt/evicted world must not stay pinned
+        held = (world.con, world.con.cursor())
         st.session_state[key] = held
     return replace(world, con=held[1])
