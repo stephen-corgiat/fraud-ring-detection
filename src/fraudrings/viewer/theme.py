@@ -21,25 +21,19 @@ from __future__ import annotations
 
 import html as _html
 
-import plotly.graph_objects as go
-import plotly.io as pio
 import streamlit as st
 
-# --- palette ------------------------------------------------------------------------------------
+from fraudrings.viewer.plotly_theme import register_plotly_template  # noqa: F401  (re-exported: T.register_plotly_template)
+
+# --- palette (the Plotly colors live in plotly_theme) -------------------------------------------
 BG = "#0e1116"          # main canvas
 BG_DEEP = "#0b0e12"     # top bar / sidebar
-CARD = "#13171d"        # card / panel surface
 CARD_INSET = "#0e1116"  # inset track inside a card
-BORDER = "#222831"
 BORDER_SOFT = "#1b2027"
-TEXT = "#e6e9ee"
-TEXT_DIM = "#aeb5bf"
 TEXT_MUTE = "#8b929c"
 TEXT_FAINT = "#6f7681"
 TEXT_GHOST = "#5a6068"
 
-RING = "#d65f5f"        # ring / anomaly / "this set" accent
-NEUTRAL = "#4c78a8"     # secondary
 BASELINE = "#bbbbbb"    # population baseline
 
 # Score-axis colors (the ④ legend + ③ composition bars), matching the design.
@@ -59,29 +53,6 @@ _TRUTH = {
     "other-ring": ("#e0a05c", "#e0a05c", "other-ring"),
     "legit": ("#4f9d69", "#7fcf95", "legit"),
 }
-
-_PLOTLY_TEMPLATE = "fraudrings_dark"
-
-
-# --- Plotly dark template -------------------------------------------------------------------
-
-def register_plotly_template() -> None:
-    """Register + activate a dark Plotly template so every figure inherits the design's surface,
-    grid, and font. Figures in charts.py set only explicit marks/heights, so they pick up these
-    defaults for everything else (called once at app start)."""
-    tmpl = go.layout.Template()
-    tmpl.layout = go.Layout(
-        paper_bgcolor=CARD,
-        plot_bgcolor=CARD,
-        font=dict(family="'IBM Plex Sans', system-ui, sans-serif", color=TEXT_DIM, size=12),
-        xaxis=dict(gridcolor=BORDER, zerolinecolor=BORDER, linecolor=BORDER),
-        yaxis=dict(gridcolor=BORDER, zerolinecolor=BORDER, linecolor=BORDER),
-        legend=dict(font=dict(color=TEXT_DIM)),
-        colorway=[NEUTRAL, RING, "#59a14f", "#e0a05c", "#a87ca5", "#9c755f"],
-    )
-    pio.templates[_PLOTLY_TEMPLATE] = tmpl
-    pio.templates.default = f"plotly_dark+{_PLOTLY_TEMPLATE}"
-
 
 # --- global CSS -----------------------------------------------------------------------------
 
