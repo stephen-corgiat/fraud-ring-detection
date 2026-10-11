@@ -23,7 +23,7 @@ ml = ["scikit-learn>=1.4", "lightgbm>=4.0"]
 viz = ["streamlit>=1.50", "pandas>=2.0", "plotly>=5.0", "networkx>=3.2"]
 dev = ["pytest>=8.0", "ruff>=0.4", "pyright>=1.1"]
 # Screenshot tooling for the docs (scripts/capture_ui.py).
-docs = ["websocket-client>=1.7", "pillow>=10.0", "matplotlib>=3.8"]
+docs = ["websocket-client>=1.7", "pillow>=10.1", "matplotlib>=3.8"]
 # The static project site (scripts/build_site.py).
 site = ["markdown-it-py>=3", "jinja2>=3.1"]
 
