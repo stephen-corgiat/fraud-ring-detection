@@ -1,0 +1,15 @@
+# Viewer — native dark theme base.
+# theme.py layers card chrome, fonts, and the custom HTML elements on top of this; the values
+# here set the palette Streamlit's own widgets (selects, checkboxes, sliders, dataframes) inherit
+# so they sit on the dark substrate without per-widget CSS.
+[theme]
+base = "dark"
+primaryColor = "#d65f5f"          # ring / anomaly accent
+backgroundColor = "#0e1116"       # main canvas
+secondaryBackgroundColor = "#13171d"  # cards / sidebar surfaces
+textColor = "#e6e9ee"
+font = "sans serif"
+
+[server]
+# The viewer is a local single-user tool; skip the usage-stats prompt/ping.
+headless = true
