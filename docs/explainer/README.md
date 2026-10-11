@@ -14,9 +14,8 @@ Each lesson ends by pointing at the exact place in the code it describes.
 | 6 | [When "Wrong" Isn't Wrong](lessons/0006-when-wrong-isnt-wrong.html) | Why flagging a member of *another* ring isn't a false positive. |
 | 7 | [Following the Money](lessons/0007-following-the-money.html) | What happens when the adversary gets careful, and why the detector degrades gracefully. |
 
-The lessons are standalone HTML pages (GitHub shows their source rather than rendering them). To read
-them, open the files in a browser after cloning, or browse them on the project's GitHub Pages site if
-it has been published.
+The lessons are standalone HTML pages (GitHub shows their source rather than rendering them). Read
+them on the [project site](https://stephen-corgiat.github.io/fraud-ring-detection/explainer/), or serve them locally after cloning:
 
 ```sh
 python -m http.server --directory docs/explainer 8000   # then open http://localhost:8000/lessons/

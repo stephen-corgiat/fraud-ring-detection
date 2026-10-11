@@ -135,7 +135,7 @@ The approach was also exercised against real production traffic.
   project took from it or deliberately didn't.
 - [Lessons](docs/research/lessons.md) — sixteen working rules for building and evaluating detectors
   against adaptive adversaries.
-- [Explainer lessons](docs/explainer/) — the detector in seven short, plain-language lessons, each
+- [Explainer lessons](https://stephen-corgiat.github.io/fraud-ring-detection/explainer/) — the detector in seven short, plain-language lessons, each
   with a quiz.
 
 ## Layout
