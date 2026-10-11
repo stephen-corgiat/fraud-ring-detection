@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lesson 5 — The Scorecard</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+  <script src="../assets/quiz.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="course">fraudrings · How the detector works</p>
+    <h1><span class="lesson-no">Lesson 5.</span> The Scorecard</h1>
+    <p class="mission-tie">How we prove the ranking is any good — the two numbers a skeptic will demand.</p>
+  </header>
+
+  <p>We can rank suspects (Lessons 1–4). But a sharp viewer won't take "trust us" for an answer. They'll
+  ask: <em>how do you know the ranking is any good?</em> There are exactly two ways to be wrong, and the detector
+  reports a number for each.</p>
+
+  <div class="bigidea">
+    <p class="label">The one idea</p>
+    <p class="punch"><strong>Recall:</strong> of the real ring members, how many did we catch?<br>
+    <strong>Precision:</strong> of the accounts we flagged, how many were actually guilty?</p>
+    <p>Recall is about <em>misses</em> (members we let slip). Precision is about <em>mistakes</em>
+    (people we wrongly accused). Different failures, different numbers.</p>
+  </div>
+
+  <h2>The analogy: the store security guard</h2>
+
+  <div class="callout analogy">
+    <span class="tag">Analogy</span>
+    <p><strong>Recall</strong> = of all the actual shoplifters in the store today, what fraction did you
+    stop? Low recall means thieves walked out.</p>
+    <p><strong>Precision</strong> = of everyone you <em>did</em> stop, what fraction were actually
+    shoplifting — versus innocent shoppers you embarrassed? Low precision means you're hassling honest
+    customers.</p>
+  </div>
+
+  <h2>Why you can't just maximize one</h2>
+
+  <p>Here's the trap, and it's worth being able to say out loud:</p>
+
+  <ul>
+    <li><strong>Want 100% recall?</strong> Stop <em>everyone</em> leaving the store. You'll catch every
+    shoplifter — and every innocent too. Precision collapses.</li>
+    <li><strong>Want 100% precision?</strong> Stop only the one person you saw pocket something on camera.
+    You'll never be wrong — but you'll miss everyone else. Recall collapses.</li>
+  </ul>
+
+  <p>Good detection means keeping <em>both</em> high at once. That tension <em>is</em> the whole game —
+  and quoting one number without the other is how dashboards lie.</p>
+
+  <h2>How the detector grades itself (fairly)</h2>
+
+  <p>You can only measure precision and recall if you already know the right answer. So the detector tests itself
+  in a <strong>synthetic world where it secretly knows the truth</strong>: it hands the engine just
+  <strong>3 known members</strong> of a ring (the seeds), <em>hides</em> the rest, and says "find them."
+  Then it checks the ranking against the hidden answer key. No human labeling required — which is the only
+  reason any of this is measurable.</p>
+
+  <p>Because a real investigation can only <em>act</em> on so many accounts, the detector grades the
+  <strong>top of the ranking</strong>: if 20 members were hidden, it looks at the top 20 and asks how many
+  are real. That's <strong>recall@k</strong> ("did we find them?") and <strong>precision@k</strong>
+  ("are our top picks right?") — precision and recall measured where it actually counts.</p>
+
+  <div class="callout catch">
+    <span class="tag">Tie-back to Lesson 1 — recall has two failure points</span>
+    <p>A member can be missed for two very different reasons: (1) the <em>narrow</em> step never retrieved
+    them — the net itself missed them (Lesson 1's "ceiling"); or (2) it retrieved them but the <em>rank</em>
+    step buried them too low. The detector reports the ceiling on its own (it calls it <code>stage1_recall</code>)
+    so you can tell <em>which stage to blame.</em> "Did we even pull them in?" and "did we rank them well?"
+    are separate questions.</p>
+  </div>
+
+  <div class="codeptr">
+    <strong>Where this lives in the code:</strong> <code>eval/evaluate.py</code> —
+    <code>stage1_recall</code> (the ceiling), <code>average_precision</code> (ranking quality),
+    <code>recall_at_k</code>, and <code>precision_at_k</code>. The protocol hands over
+    <code>seeds_per_ring = 3</code> and hides the rest as the answer key.
+  </div>
+
+  <h2>Check yourself</h2>
+
+  <div class="quiz">
+    <p class="q">Which one describes <em>recall</em>?</p>
+    <button data-correct="true" data-fb="Yes — recall is about misses: of the real members, how many we caught.">Of the real ring members, the fraction we caught.</button>
+    <button data-correct="false" data-fb="That's precision — of those we flagged, the fraction guilty.">Of the accounts we flagged, the fraction guilty.</button>
+    <button data-correct="false" data-fb="No — neither metric is 'fraction of everyone flagged.'">Of the whole population, the fraction we flagged.</button>
+  </div>
+
+  <div class="quiz">
+    <p class="q">You flag every account in the system. What happens?</p>
+    <button data-correct="true" data-fb="Right — you catch all members (recall 100%) but flag everyone, so precision collapses.">Recall hits 100%, but precision collapses entirely.</button>
+    <button data-correct="false" data-fb="Backwards — flagging everyone wrecks precision, not recall.">Precision hits 100%, but recall collapses entirely.</button>
+    <button data-correct="false" data-fb="No — flagging everyone can't make both perfect; that's the trap.">Both recall and precision reach 100% at once.</button>
+  </div>
+
+  <div class="rehearsal">
+    <h3>🎙️ In one breath</h3>
+    <p>Explain precision vs. recall with the security-guard analogy in ~20 seconds. A good version:</p>
+    <p style="font-style:italic; color:var(--soft)">"Recall asks: of all the real shoplifters, how many did
+    we stop? Precision asks: of everyone we stopped, how many were actually guilty? You can max either one
+    alone — stop everyone, or stop nobody but your surest catch — so the real job is keeping both high. We
+    prove it on a simulated world where we know the answer and hide it from the detector."</p>
+  </div>
+
+  <div class="source">
+    📖 <strong>Primary source (optional):</strong>
+    <a href="https://developers.google.com/machine-learning/crash-course/classification/precision-and-recall">Google
+    ML Crash Course — Accuracy, recall, precision</a>. The canonical plain-language treatment. Read the
+    precision and recall definitions and the note that the two trade off against each other.
+  </div>
+
+  <footer class="foot">
+    <p class="ask">💬 Worth asking next: "If we flag someone who isn't in this ring, is that always a mistake?" — that's exactly Lesson 6, and the answer surprises people.</p>
+    <p><strong>Previously:</strong> <a href="0004-acting-alike.html">Lesson 4 — Acting Alike</a>.
+    <br><strong>Next up — Lesson 6:</strong> when a "wrong" flag isn't wrong at all — the honest
+    decomposition that wins the false-positive argument.</p>
+    <p>Reference: <a href="../../../GLOSSARY.md">Glossary</a> · <a href="../../walkthrough.md">Walkthrough</a></p>
+  </footer>
+
+</div>
+</body>
+</html>

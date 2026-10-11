@@ -1,0 +1,38 @@
+[
+  {
+    "level": "naive",
+    "seeds": [
+      7,
+      13,
+      21
+    ],
+    "recall_at_k": 1.0,
+    "mean_rank": 6.88,
+    "worst_rank": 15,
+    "n_suspects": 40.3
+  },
+  {
+    "level": "moderate",
+    "seeds": [
+      7,
+      13,
+      21
+    ],
+    "recall_at_k": 0.9167,
+    "mean_rank": 9.46,
+    "worst_rank": 17,
+    "n_suspects": 123.3
+  },
+  {
+    "level": "sophisticated",
+    "seeds": [
+      7,
+      13,
+      21
+    ],
+    "recall_at_k": 0.5,
+    "mean_rank": 46.71,
+    "worst_rank": 129,
+    "n_suspects": 152.3
+  }
+]

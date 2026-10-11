@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lesson 1 — Narrow, then Rank</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+  <script src="../assets/quiz.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="course">fraudrings · How the detector works</p>
+    <h1><span class="lesson-no">Lesson 1.</span> Narrow, then Rank</h1>
+    <p class="mission-tie">The one sentence your whole explanation hangs on — the spine of the detector.</p>
+  </header>
+
+  <p>The detector's job: someone hands you a few accounts you already know are cheating — a
+  <strong>seed</strong> — and asks, <em>"find the rest of the ring."</em> There are millions of
+  accounts in the system. How does the engine get from "3 known cheats" to "here are the other 40,
+  ranked by how sure we are"?</p>
+
+  <p>The entire answer is two moves, in order.</p>
+
+  <div class="bigidea">
+    <p class="label">The one idea</p>
+    <p class="punch">First <em>narrow</em> millions of accounts down to a short list.<br>
+    Then <em>rank</em> that short list by strength of evidence.</p>
+    <p>That's it. Everything else is detail about <em>how</em> it narrows and <em>how</em> it ranks.
+    The detector's code literally calls these two stages <strong>candidate selection</strong> (the narrow)
+    and <strong>scoring</strong> (the rank).</p>
+  </div>
+
+  <h2>The analogy: a detective with a few suspects</h2>
+
+  <div class="callout analogy">
+    <span class="tag">Analogy</span>
+    <p>You've arrested three members of a crime ring (your <strong>seeds</strong>). A whole city of
+    innocent people surrounds them. You don't interrogate the entire city — that's impossible and
+    cruel. Instead:</p>
+    <p><strong>Move 1 — round up (narrow).</strong> Pull in everyone who shares something concrete
+    with your three: same safe-house address, same burner phone, same getaway car. Fast, wide, cheap.
+    You go from a million people to maybe fifty <strong>candidates</strong>.</p>
+    <p><strong>Move 2 — build the case (rank).</strong> Now do the slow, careful work <em>only on
+    those fifty</em>: weigh the evidence against each one and line them up, strongest case first.</p>
+  </div>
+
+  <p>The detector does exactly this. The "shared safe-house / phone / car" are shared technical
+  fingerprints — IP addresses, devices, network providers. The "weigh the evidence and line them up"
+  is the scoring step you'll meet in later lessons.</p>
+
+  <h2>Why two separate moves? (the question a skeptic will ask)</h2>
+
+  <p>Because <strong>the careful step is expensive and the world is huge.</strong> Weighing the full
+  evidence against all million accounts would be hopelessly slow — and pointless, because almost none
+  of them are connected to your seeds at all. So you spend the cheap, wide net first to throw away the
+  99.99% that are obviously irrelevant, and you spend the expensive judgment only on the survivors.</p>
+
+  <p>This <strong>narrow-then-rank</strong> shape isn't a quirk of this detector — it's how web search,
+  recommendation feeds, and online-shop search all work under the hood. Narrow billions to hundreds cheaply,
+  then rank the hundreds carefully. Being able to say <em>"this is the same pattern as web search"</em>
+  makes your explanation instantly credible.</p>
+
+  <div class="callout catch">
+    <span class="tag">The one catch — say this before a skeptic does</span>
+    <p>The narrow step sets a <strong>ceiling</strong>. If a real ring member shares <em>nothing</em>
+    with the seeds, the net never catches them — and no amount of clever ranking afterward can rank
+    someone who was never pulled in. So "did we even retrieve them?" is a separate, earlier question
+    from "did we rank them well?" the detector measures both, on purpose. (Later lesson: this is
+    <em>recall</em>.)</p>
+  </div>
+
+  <div class="codeptr">
+    <strong>Where this lives in the code:</strong> <code>detector/engine.py →
+    run_investigation()</code>. The first SQL query builds a dictionary of candidates (the narrow).
+    The <code>for</code> loop afterward gives each one a <code>score</code> and sorts (the rank). Two
+    moves, one function — exactly the spine above.
+  </div>
+
+  <h2>Check yourself</h2>
+
+  <div class="quiz">
+    <p class="q">A skeptic asks: "Why not just score all million accounts directly?" Best one-liner?</p>
+    <button data-correct="false" data-fb="Scoring isn't restricted to creator-sharers — and that's not the cost argument.">Because scoring only works on accounts that share a creator anyway.</button>
+    <button data-correct="true" data-fb="Right — the careful step is costly, so we narrow first and rank only the survivors.">Because careful scoring is costly, so we narrow first and rank fewer.</button>
+    <button data-correct="false" data-fb="Scoring doesn't invert the order — and again, this misses the real reason: cost.">Because scoring always ranks the innocent above the guilty ones.</button>
+  </div>
+
+  <div class="quiz">
+    <p class="q">Which is the right name-to-move match for the detector's two stages?</p>
+    <button data-correct="true" data-fb="Yes — candidate selection narrows the field; scoring ranks the survivors.">Candidate selection narrows the field; scoring then ranks the survivors.</button>
+    <button data-correct="false" data-fb="Backwards — selection narrows, scoring ranks. Don't swap them.">Candidate selection ranks the field; scoring then narrows the survivors.</button>
+    <button data-correct="false" data-fb="Both stages aren't ranking — the first one's whole job is to narrow.">Candidate selection ranks the field; scoring re-ranks the same field.</button>
+  </div>
+
+  <div class="rehearsal">
+    <h3>🎙️ In one breath (this is the real win)</h3>
+    <p>Try explaining it. Say the whole engine in under 20 seconds, in your own words, to an imaginary
+    colleague. A good version sounds like:</p>
+    <p style="font-style:italic; color:var(--soft)">"We start from a few accounts we already know are
+    cheating. First we cast a wide, cheap net to pull in everyone connected to them — that's candidate
+    selection. Then we carefully rank just those, strongest evidence first — that's scoring. Same
+    narrow-then-rank trick web search uses."</p>
+    <p>Said it without peeking? That's Lesson 1 done. Stumbled? Say it twice more — fluency is the goal.</p>
+  </div>
+
+  <div class="source">
+    📖 <strong>Primary source (optional, ~10 min):</strong>
+    <a href="https://developers.google.com/machine-learning/recommendation/overview/candidate-generation">Google
+    ML — Candidate Generation Overview</a>. Google's own course on the identical two-stage pattern.
+    Read just the intro: notice they call the narrow step "candidate generation" and treat scoring as a
+    separate later stage — same idea, different words.
+  </div>
+
+  <footer class="foot">
+    <p class="ask">💬 Worth asking next: "What counts as 'connected' in the narrow step?" or "How exactly does it rank?" Those are Lessons 2 and 3.</p>
+    <p><strong>Next up — Lesson 2:</strong> why the net only counts <em>rare</em> shared things
+    (sharing a coffee-shop's Wi-Fi proves nothing; sharing an obscure device fingerprint proves a lot).</p>
+    <p>Reference: <a href="../../../GLOSSARY.md">Glossary</a> · <a href="../../walkthrough.md">Walkthrough</a></p>
+  </footer>
+
+</div>
+</body>
+</html>

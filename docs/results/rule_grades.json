@@ -1,0 +1,120 @@
+{
+  "preset": "default",
+  "seeds": [
+    7,
+    13,
+    21
+  ],
+  "targets": {
+    "precision": 0.9,
+    "recall": 0.8,
+    "legit_fp": 0.05
+  },
+  "levels": [
+    {
+      "level": "naive",
+      "recall": 0.9942,
+      "operational_precision": 1.0,
+      "legit_fp_rate": 0.0,
+      "meets_targets": true,
+      "n_seeds_meeting": 3,
+      "n_seeds": 3,
+      "recall_min": 0.9895,
+      "fp_max": 0.0,
+      "baseline_recall_at_k": 1.0,
+      "recall_lift": -0.0058,
+      "challenge_recall": 0.9932,
+      "lgbm_recall": 0.987,
+      "seeds": [
+        7,
+        13,
+        21
+      ],
+      "recall_per_seed": [
+        0.9965,
+        0.9968,
+        0.9895
+      ],
+      "precision_per_seed": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "fp_per_seed": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "level": "moderate",
+      "recall": 0.9955,
+      "operational_precision": 1.0,
+      "legit_fp_rate": 0.0,
+      "meets_targets": true,
+      "n_seeds_meeting": 3,
+      "n_seeds": 3,
+      "recall_min": 0.9943,
+      "fp_max": 0.0,
+      "baseline_recall_at_k": 0.7805,
+      "recall_lift": 0.215,
+      "challenge_recall": 0.9955,
+      "lgbm_recall": 0.8416,
+      "seeds": [
+        7,
+        13,
+        21
+      ],
+      "recall_per_seed": [
+        0.9962,
+        0.9961,
+        0.9943
+      ],
+      "precision_per_seed": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "fp_per_seed": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "level": "sophisticated",
+      "recall": 0.9969,
+      "operational_precision": 0.963,
+      "legit_fp_rate": 0.037,
+      "meets_targets": true,
+      "n_seeds_meeting": 3,
+      "n_seeds": 3,
+      "recall_min": 0.9949,
+      "fp_max": 0.0403,
+      "baseline_recall_at_k": 0.3708,
+      "recall_lift": 0.6262,
+      "challenge_recall": 0.9974,
+      "lgbm_recall": 0.7558,
+      "seeds": [
+        7,
+        13,
+        21
+      ],
+      "recall_per_seed": [
+        0.9991,
+        0.9949,
+        0.9968
+      ],
+      "precision_per_seed": [
+        0.9597,
+        0.961,
+        0.9683
+      ],
+      "fp_per_seed": [
+        0.0403,
+        0.039,
+        0.0317
+      ]
+    }
+  ]
+}

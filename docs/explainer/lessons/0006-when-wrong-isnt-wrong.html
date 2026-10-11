@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lesson 6 — When "Wrong" Isn't Wrong</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+  <script src="../assets/quiz.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="course">fraudrings · How the detector works</p>
+    <h1><span class="lesson-no">Lesson 6.</span> When "Wrong" Isn't Wrong</h1>
+    <p class="mission-tie">The answer to the #1 skeptic question: "won't you flag innocent people?"</p>
+  </header>
+
+  <p>Last lesson: <strong>precision</strong> is "of the accounts we flagged, how many were guilty?" The
+  scary kind of wrong is accusing an innocent. But here's the subtlety that turns the false-positive
+  argument in your favor — and it's the most distinctive idea in the whole system.</p>
+
+  <div class="bigidea">
+    <p class="label">The one idea</p>
+    <p class="punch">When the detector flags someone who isn't in <em>this</em> ring, there are two completely
+    different cases — and only one is a real mistake.</p>
+    <p>Lumping them together makes the detector look worse than it is. The detector counts them
+    <em>separately</em>, on purpose.</p>
+  </div>
+
+  <h2>The two kinds of "not who we were looking for"</h2>
+
+  <div class="callout analogy">
+    <span class="tag">Analogy</span>
+    <p>Your security guard is chasing a specific shoplifter and stops the wrong person. Two stories:</p>
+    <p><strong>Story A:</strong> the person they stopped turns out to be a <em>different</em> wanted
+    criminal — a pickpocket with an open warrant. Off-target, sure, but they still caught a crook.</p>
+    <p><strong>Story B:</strong> the person is a genuine, innocent shopper. <em>That</em> is the only stop
+    that should cost you any trust.</p>
+    <p>Same surface fact ("not the one we were after"), opposite meaning.</p>
+  </div>
+
+  <h2>The detector's three buckets</h2>
+
+  <p>Every account in the flagged set lands in exactly one of three buckets:</p>
+
+  <ul>
+    <li><strong>This ring</strong> — a correct catch for the case at hand. A clean win.</li>
+    <li><strong>Other-ring fraud</strong> — a member of a <em>different</em> fraud ring. Off the current
+    case, but still a fraudster. Operationally, still a win. The detector calls this <em>cross-ring bleed.</em></li>
+    <li><strong>Legit</strong> — a genuine, innocent viewer. <strong>This is the real false positive</strong>
+    — the only number that should ever scare you.</li>
+  </ul>
+
+  <p>Two headline figures fall out: <strong>operational precision</strong> (flagged accounts that are fraud
+  <em>at all</em> — this ring or another) and the <strong>legit false-positive rate</strong> (flagged
+  accounts that are actually innocent). The whole system is tuned to keep that second number low.</p>
+
+  <div class="callout">
+    <span class="tag">Why this matters for your mission</span>
+    <p>The #1 question you'll get is <em>"won't you flag innocent people?"</em> The credibility-winning
+    answer: <em>"We split our off-target flags. Most of what looks like a 'wrong flag' is actually another
+    ring's fraud — still fraud. The thing we guard hardest, and measure on its own, is the genuine-innocent
+    rate."</em> That single move separates a serious detector from a dragnet.</p>
+  </div>
+
+  <h2>The detail that makes it honest</h2>
+
+  <p>The synthetic world even plants <strong>benign super-fan clubs</strong> — innocent people who binge one
+  creator together in a way that <em>looks</em> coordinated. They exist specifically to try to fool the detector.
+  So the innocent-false-positive number is measured against the <em>hardest</em> innocents, not easy ones.
+  When you quote that rate, you're quoting it under deliberate pressure.</p>
+
+  <div class="callout catch">
+    <span class="tag">The honest caveat — disclose it</span>
+    <p>Cross-ring bleed still <em>drags down</em> the simple per-case precision number from Lesson 5, even
+    though it isn't a real error. So a single "precision" figure can make the detector look worse than it is —
+    which is precisely why it reports the three-bucket breakdown instead of one tidy number. Refusing to
+    hide behind one number is the trustworthy move.</p>
+  </div>
+
+  <div class="codeptr">
+    <strong>Where this lives in the code:</strong> <code>eval/evaluate.py</code> buckets each flagged slot
+    into <code>flagged_this_ring</code> / <code>flagged_other_ring</code> / <code>flagged_legit</code>, then
+    derives <code>operational_precision</code>, <code>legit_fp_rate</code>, and <code>cross_ring_frac</code>.
+    The <code>all_fraud_ids</code> roster is the "oracle" used only to sort flags into buckets — the detector
+    never sees it.
+  </div>
+
+  <h2>Check yourself</h2>
+
+  <div class="quiz">
+    <p class="q">The detector flags an account that's not in this ring — but it's in a <em>different</em> fraud ring. How's it counted?</p>
+    <button data-correct="true" data-fb="Yes — cross-ring bleed: still fraud, operationally a win, not a real false positive.">Still fraud — operationally a good catch, not a real false positive.</button>
+    <button data-correct="false" data-fb="No — that bucket (legit) is for innocent viewers, not other rings' fraud.">A genuine false positive — an innocent viewer wrongly flagged.</button>
+    <button data-correct="false" data-fb="No — it isn't discarded; it's counted as other-ring fraud.">Discarded — only the ring under investigation is ever counted.</button>
+  </div>
+
+  <div class="quiz">
+    <p class="q">Which flagged account is the "real" false positive the detector works hardest to avoid?</p>
+    <button data-correct="true" data-fb="Right — a genuine innocent viewer is the only flag that should cost trust.">A genuine innocent viewer wrongly caught in the net.</button>
+    <button data-correct="false" data-fb="No — a different ring's member is still fraud, an operational win.">A member of a different, unrelated fraud ring.</button>
+    <button data-correct="false" data-fb="No — seeds are the known-guilty starting point, never a false positive.">A seed account handed in at the very start.</button>
+  </div>
+
+  <div class="rehearsal">
+    <h3>🎙️ In one breath</h3>
+    <p>Answer the skeptic's "what about false positives?" in ~20 seconds using the split. A good version:</p>
+    <p style="font-style:italic; color:var(--soft)">"When we flag someone who isn't in the ring we're
+    chasing, we don't just call it a mistake. Often they're in a <em>different</em> fraud ring — still a
+    real catch. The only flag we treat as a true error is a genuine innocent viewer, and we measure that
+    rate on its own — even against planted super-fan clubs designed to fool us."</p>
+  </div>
+
+  <div class="source">
+    📖 <strong>Primary source (optional):</strong>
+    <a href="https://developers.google.com/machine-learning/crash-course/classification/precision-and-recall">Google
+    ML Crash Course — precision &amp; false positives</a>. Background on what counts as a false positive.
+    The detector's three-bucket split is a refinement on top: it asks <em>what kind</em> of false positive,
+    because not all are equal.
+  </div>
+
+  <footer class="foot">
+    <p class="ask">💬 You've now got the whole spine: narrow → rank (4 signals) → grade honestly. Retry the six quizzes out of order — interleaving is what makes it stick.</p>
+    <p><strong>Previously:</strong> <a href="0005-the-scorecard.html">Lesson 5 — The Scorecard</a>.
+    <br><strong>Next up — Lesson 7:</strong> the sophisticated evader — how a ring hides its infrastructure,
+    and the co-target "fallback" net that catches it anyway.</p>
+    <p>Reference: <a href="../../../GLOSSARY.md">Glossary</a> · <a href="../../walkthrough.md">Walkthrough</a></p>
+  </footer>
+
+</div>
+</body>
+</html>

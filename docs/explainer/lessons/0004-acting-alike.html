@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lesson 4 — Acting Alike</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+  <script src="../assets/quiz.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="course">fraudrings · How the detector works</p>
+    <h1><span class="lesson-no">Lesson 4.</span> Acting Alike</h1>
+    <p class="mission-tie">The behavioral signal — the one that sounds like scary math, defused.</p>
+  </header>
+
+  <p>Lesson 3 gave us four signals. The middle one — <strong>behavioral</strong>, "do they act like the
+  ring?" — is the one that <em>sounds</em> the most mathematical (you may have heard the phrase "feature
+  vectors in standardized space"). Let's take all the fear out of it. It's simpler than it sounds.</p>
+
+  <div class="bigidea">
+    <p class="label">The one idea</p>
+    <p class="punch">Describe every account by a short <em>stat line</em> of numbers. A candidate whose
+    stat line is <em>close</em> to the ring's typical stat line is acting like the ring.</p>
+  </div>
+
+  <h2>The analogy: a sports player card</h2>
+
+  <div class="callout analogy">
+    <span class="tag">Analogy</span>
+    <p>Every basketball player is a row of stats: points, rebounds, assists, minutes, turnovers. Scouts
+    spot "this rookie views like prime Steve Nash" by noticing the rookie's row of numbers sits <em>close
+    to</em> Nash's row. No magic — just comparing two rows of numbers.</p>
+    <p>The detector does the identical thing, but the "player" is an account and the stats are viewing habits.</p>
+  </div>
+
+  <h2>What's on an account's stat line</h2>
+
+  <p>The detector measures about ten everyday behaviors per account — in plain words: how often they skip,
+  how often a view lasts long enough to count for payouts, how many views per session, the average
+  gap between actions and how <em>regular</em> that gap is, how many hours of the day they're active,
+  how many different creators they touch, how fixated they are on one top creator, and how many IPs and
+  networks they use. Bots tend to share a tell-tale stat line: barely skip, eerily regular gaps, a
+  narrow set of creators.</p>
+
+  <h2>The "average ring member"</h2>
+
+  <p>Take the seed accounts' stat lines and average them column by column. That gives one composite
+  <strong>typical ring member</strong> — the detector calls it the <em>centroid</em>, but "the average ring
+  member" is all you ever need to say. Each candidate is then scored by <strong>how close their stat
+  line sits to that average</strong>: close ⇒ high behavioral score, far ⇒ low.</p>
+
+  <h2>The one fairness trick</h2>
+
+  <div class="callout">
+    <span class="tag">Standardization, in plain words</span>
+    <p>Different stats live on wildly different scales — "views per session" might be 5 while "average gap
+    between actions" might be 40,000 seconds. Compare those raw and the big-numbered stat drowns out
+    everything else. So first, each stat is rephrased as <em>"how unusual is this compared to the
+    crowd?"</em> — a little above average, or a lot below. Now every column speaks the same language and
+    no single stat bullies the others. Think of it as <strong>grading every stat on a curve.</strong></p>
+  </div>
+
+  <p>After that fair footing, "closeness" is just the <strong>straight-line distance between the two
+  rows of numbers</strong> — like distance between two points on a map. Small distance becomes a score
+  near 1; large distance, a score near 0.</p>
+
+  <div class="callout catch">
+    <span class="tag">The honest caveat</span>
+    <p>Real super-fans can <em>act</em> a bit like a ring — bingeing one creator on repeat looks robotic.
+    So behavior alone is never proof. That's precisely why it's only 25% of the blend and always rides
+    alongside linkage and co-target (Lesson 3).</p>
+  </div>
+
+  <div class="codeptr">
+    <strong>Where this lives in the code:</strong> <code>ingest.py</code> builds
+    <code>account_features</code> (the stat lines); the ten columns are <code>behavioral_features</code> in
+    <code>config.py</code>. In <code>engine.py</code>, <code>_standardizer</code> does the "grade on a
+    curve," the <strong>centroid</strong> is the average of the seed stat lines, and
+    <code>behav = 1 / (1 + distance)</code> turns closeness into the 0-to-1 score.
+  </div>
+
+  <h2>Check yourself</h2>
+
+  <div class="quiz">
+    <p class="q">What is the "average ring member" (the centroid)?</p>
+    <button data-correct="true" data-fb="Yes — average the seeds' stat lines column by column into one composite row.">The seed accounts' stat lines averaged column by column.</button>
+    <button data-correct="false" data-fb="No — it's an average of all seeds, not a single chosen seed.">The single seed account closest to all the others.</button>
+    <button data-correct="false" data-fb="No — that's what we score against it, not the average itself.">The candidate whose behavior is nearest the ring's.</button>
+  </div>
+
+  <div class="quiz">
+    <p class="q">Why are the stats put on a common footing (standardized) first?</p>
+    <button data-correct="true" data-fb="Right — otherwise a big-numbered stat dominates the distance by accident.">So a large-numbered stat can't drown out the smaller ones.</button>
+    <button data-correct="false" data-fb="No — that's the linkage signal (Lesson 2), a different mechanism.">So rare identifiers count for more than common ones do.</button>
+    <button data-correct="false" data-fb="No — it's about fairness across stats, not skipping work for speed.">So the slowest stat to compute can be skipped for speed.</button>
+  </div>
+
+  <div class="rehearsal">
+    <h3>🎙️ In one breath</h3>
+    <p>Explain the behavioral signal with the player-card analogy in ~20 seconds. A good version:</p>
+    <p style="font-style:italic; color:var(--soft)">"We describe each account by a stat line — skip rate,
+    view length, how regular their timing is, and so on — like a sports player's box score. We average the
+    known ring members into one typical stat line, then score each suspect by how close their stat line
+    sits to it. We grade every stat on a curve first so no single big-numbered stat dominates."</p>
+  </div>
+
+  <div class="source">
+    📖 <strong>Primary source (optional):</strong>
+    <a href="https://developers.google.com/machine-learning/recommendation/overview/candidate-generation">Google
+    ML — Candidate Generation</a>, the "similarity measures" part. It frames items as rows of numbers and
+    compares them by distance — the same "close rows are similar" idea, in the recommender's language.
+  </div>
+
+  <footer class="foot">
+    <p class="ask">💬 This is the lesson most worth re-reading slowly: the stat line, the average member, grading on a curve, then distance — each piece builds on the last.</p>
+    <p><strong>Previously:</strong> <a href="0003-four-lines-of-evidence.html">Lesson 3 — Four Lines of Evidence</a>.
+    <br><strong>Next up — Lesson 5:</strong> how we <em>grade</em> the whole detector honestly
+    (precision &amp; recall) — the scorecard that wins a skeptic's trust.</p>
+    <p>Reference: <a href="../../../GLOSSARY.md">Glossary</a> · <a href="../../walkthrough.md">Walkthrough</a></p>
+  </footer>
+
+</div>
+</body>
+</html>

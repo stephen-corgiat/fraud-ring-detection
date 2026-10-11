@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lesson 3 — Four Lines of Evidence</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+  <script src="../assets/quiz.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="course">fraudrings · How the detector works</p>
+    <h1><span class="lesson-no">Lesson 3.</span> Four Lines of Evidence</h1>
+    <p class="mission-tie">How the "rank" step actually decides who's most suspicious.</p>
+  </header>
+
+  <p>We've narrowed the field (Lesson 1) and learned that only <em>rare</em> shared clues count
+  (Lesson 2). Now the second move: given a short list of candidates, how does the detector <strong>rank</strong>
+  them so the most suspicious rise to the top?</p>
+
+  <div class="bigidea">
+    <p class="label">The one idea</p>
+    <p class="punch">Judge every candidate on four independent lines of evidence,<br>then blend them
+    into a single score.</p>
+    <p>No single clue convicts. The more lines that agree, the higher a candidate ranks.</p>
+  </div>
+
+  <h2>The analogy: a hiring panel</h2>
+
+  <div class="callout analogy">
+    <span class="tag">Analogy</span>
+    <p>You don't hire someone off one interview. You combine, say, a <strong>coding test</strong>, their
+    <strong>references</strong>, and a <strong>culture interview</strong> — and you weight them by how much
+    you trust each one. Someone strong on all of them rises to the top of the stack; strong on one but weak
+    on the others sits lower.</p>
+    <p>The detector's score is exactly this: a <em>weighted vote</em> of four "references" on each candidate.</p>
+  </div>
+
+  <h2>The four references</h2>
+
+  <ul>
+    <li><strong>Linkage (weight 45%)</strong> — "do they share <em>rare</em> infrastructure with the ring?"
+    The rarity idea from Lesson 2. The detector's most-trusted reference.</li>
+    <li><strong>Behavioral (weight 25%)</strong> — "do they <em>act</em> like the ring?" Same viewing
+    patterns: skipping, view length, active hours, and so on. (Full deep-dive next lesson.)</li>
+    <li><strong>Co-target (weight 15%)</strong> — "do they push the same obscure creator the ring is paid
+    to inflate?" Overlap of the creators they view.</li>
+    <li><strong>Action mix (weight 15%)</strong> — "do they use the product the way people do?" A real
+    viewer searches, skips, saves and finishes some things; a crude bot goes straight to the target and
+    "completes" everything. Plus account age: freshly minted accounts stand out.</li>
+  </ul>
+
+  <h2>How the blend works</h2>
+
+  <p>Each reference produces a sub-score, all squeezed onto the <strong>same 0-to-1 scale</strong> so
+  they're comparable (otherwise whichever one happens to use bigger raw numbers would dominate by
+  accident). Then the detector adds them up by their weights:</p>
+
+  <div class="callout">
+    <span class="tag">The whole scoring formula, in words</span>
+    <p><code>score = 0.45 × linkage + 0.25 × behavioral + 0.15 × co-target + 0.15 × action mix</code></p>
+    <p>The weights are a statement of trust: linkage is the strongest reference; co-target and action mix the weakest.
+    Compute that score for every candidate, sort highest-first, and <em>that sorted list is the
+    investigation's answer.</em></p>
+  </div>
+
+  <h2>Why four instead of one?</h2>
+
+  <p>Because any single signal can be <em>evaded</em>. A sophisticated ring rents fresh residential IPs
+  and spoofs devices — that <em>kills linkage</em>. But it still has to view the target creator to get
+  paid, so <em>co-target survives</em>. A clever bot might fake one behavior but not all ten at once.
+  Four independent signals are far harder to beat simultaneously than any one alone. Being able to say
+  <em>"we don't rely on a single tell"</em> is what makes the system credible to a skeptic.</p>
+
+  <div class="callout catch">
+    <span class="tag">The honest caveat — disclose this</span>
+    <p>In this version the weights (45/25/15/15) are <strong>hand-set by a human</strong>, not learned from
+    data — a reasoned judgment call, not gospel. The learned rule (Lesson 7) is what replaces them when the adversary gets good. Saying so up
+    front is a strength: it shows you know the difference between "we chose these" and "the data proved these."</p>
+  </div>
+
+  <div class="codeptr">
+    <strong>Where this lives in the code:</strong> <code>engine.py</code> →
+    <code>score = w_linkage×linkage + w_behavioral×behavioral + w_cotarget×cotarget + w_actionmix×actionmix</code>,
+    with the weights <code>0.45 / 0.25 / 0.15 / 0.15</code> in <code>config.py</code>. Each <code>Candidate</code>
+    keeps all four sub-scores, so you can always see <em>why</em> something ranked where it did.
+  </div>
+
+  <h2>Check yourself</h2>
+
+  <div class="quiz">
+    <p class="q">Why combine four signals instead of trusting linkage alone?</p>
+    <button data-correct="true" data-fb="Yes — a ring can dodge one tell, but rarely all four at once.">Any single signal can be evaded; four are harder to beat at once.</button>
+    <button data-correct="false" data-fb="No — linkage is the highest-weighted, most-trusted signal, not a reject.">Linkage is unreliable, so the others quietly replace it entirely.</button>
+    <button data-correct="false" data-fb="No — it's about robustness to evasion, not about raw speed.">Four signals run faster than one on very large account sets.</button>
+  </div>
+
+  <div class="quiz">
+    <p class="q">A candidate scores high on co-target but near zero on everything else. Where do they land?</p>
+    <button data-correct="true" data-fb="Right — co-target is only 15%, so one weak-weighted hit can't top the list.">Low-to-middle — one weak-weighted signal can't outweigh three.</button>
+    <button data-correct="false" data-fb="No — no single signal guarantees the top; it's a weighted blend.">Top — any single strong signal guarantees the highest rank.</button>
+    <button data-correct="false" data-fb="No — a zero on a signal lowers the blend, it doesn't drop the candidate.">Excluded — a zero on any signal removes the candidate entirely.</button>
+  </div>
+
+  <div class="rehearsal">
+    <h3>🎙️ In one breath</h3>
+    <p>Name the four signals and the panel analogy in ~20 seconds. A good version:</p>
+    <p style="font-style:italic; color:var(--soft)">"Each candidate gets judged like a job applicant by a
+    panel: do they share rare infrastructure (linkage), do they behave like the ring (behavioral), and do
+    they push the same target creator (co-target), and do they use the product like a person (action mix)?
+    We weight those — linkage most — add them into one score, and rank. Four signals, because a ring can
+    dodge one but rarely all four."</p>
+  </div>
+
+  <div class="source">
+    📖 <strong>Primary source (optional):</strong>
+    <a href="https://developers.google.com/machine-learning/recommendation/dnn/scoring">Google ML —
+    Recommendation Systems: Scoring</a>. The stage that ranks a retrieved shortlist. Note the shape:
+    a separate, more careful scoring step refines what the wide net pulled in — same as the detector.
+  </div>
+
+  <footer class="foot">
+    <p class="ask">💬 Worth asking next: "How do you measure whether they <em>act</em> like the ring?" — that's the behavioral signal, Lesson 4.</p>
+    <p><strong>Previously:</strong> <a href="0002-only-rare-clues-count.html">Lesson 2 — Only Rare Clues Count</a>.
+    <br><strong>Next up — Lesson 4:</strong> the behavioral signal — feature vectors and the "average ring
+    member," with the scary math defused.</p>
+    <p>Reference: <a href="../../../GLOSSARY.md">Glossary</a> · <a href="../../walkthrough.md">Walkthrough</a></p>
+  </footer>
+
+</div>
+</body>
+</html>

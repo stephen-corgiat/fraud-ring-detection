@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lesson 7 — Following the Money</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+  <script src="../assets/quiz.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="course">fraudrings · How the detector works</p>
+    <h1><span class="lesson-no">Lesson 7.</span> Following the Money</h1>
+    <p class="mission-tie">Why a clever adversary doesn't break the detector — the graceful-degradation story.</p>
+  </header>
+
+  <p>Every skeptic's last question: <em>"Sure, but what about a smart fraudster who knows you're
+  watching?"</em> A sophisticated ring deliberately erases the trails we've relied on. This lesson is how
+  The detector answers that — and it's the most reassuring idea in the whole system.</p>
+
+  <div class="bigidea">
+    <p class="label">The one idea</p>
+    <p class="punch">A ring can hide <em>how</em> it operates, but not <em>why</em> it exists. When the
+    infrastructure trail goes cold, follow the money instead.</p>
+    <p>The money is the one thing they can't fake away: to earn payouts, every member must keep viewing
+    the same target creator.</p>
+  </div>
+
+  <h2>How a sophisticated ring goes dark</h2>
+
+  <p>Recall the <a href="0002-only-rare-clues-count.html">linkage signal</a>: it catches accounts that
+  share rare infrastructure. So a careful ring stops sharing. Instead of a few datacenter IPs, each member
+  rents <em>residential</em> proxies on the same big providers everyone's grandmother uses; each account
+  sticks to just one or two IPs; every session mints a fresh device fingerprint. The shared footprint
+  linkage needs simply isn't there anymore.</p>
+
+  <div class="callout analogy">
+    <span class="tag">Analogy</span>
+    <p>A crime ring that stops sharing safe-houses, cars, and burner phones. Each member now lives a
+    separate, ordinary-looking life. Your "who shares an address?" net comes up empty — every search returns
+    a normal citizen.</p>
+  </div>
+
+  <h2>The thing they can't hide</h2>
+
+  <p>But the whole point of the ring is to pump one obscure <strong>target creator</strong> so the payouts
+  flow. They can scatter their infrastructure infinitely — they <em>cannot</em> stop viewing the target,
+  because that <em>is</em> the paycheck. So the detector switches nets:</p>
+
+  <div class="callout">
+    <span class="tag">The co-target net</span>
+    <p>Instead of "who shares rare infrastructure?", ask <em>"who is all viewing this same obscure target,
+    in the same campaign window?"</em> The detector finds the target by spotting the creator the known seeds pour
+    their payout-earning views into, then pulls in every account doing the same in that time window. The
+    infrastructure trail is gone, but the money trail is wide open.</p>
+  </div>
+
+  <div class="callout analogy">
+    <span class="tag">Analogy</span>
+    <p>You can't link the suspects by shared addresses anymore — so you <strong>follow the money</strong>.
+    Who keeps depositing into the same account? That question doesn't care how clever they are about hiding
+    where they live.</p>
+  </div>
+
+  <p>The detector fires this net <em>adaptively</em> — only when the seeds' shared infrastructure looks too thin
+  to have worked (the sophisticated regime). On easy naive rings, where linkage already nails it, the
+  co-target net stays holstered so it doesn't stir up needless noise.</p>
+
+  <h2>The honest part: what "losing" actually looks like</h2>
+
+  <p>As rings get more sophisticated, the ranking does get fuzzier — and here's how to describe that to a
+  colleague without overclaiming, tying together <a href="0005-the-scorecard.html">Lesson 5</a> and
+  <a href="0006-when-wrong-isnt-wrong.html">Lesson 6</a>:</p>
+
+  <ul>
+    <li>The per-case ranking score (AP) <strong>slopes down</strong> — yes, it gets harder.</li>
+    <li>But the <strong>false-positive line holds</strong> — we don't start flagging innocent viewers.</li>
+    <li>The precision we "lose" is mostly <a href="0006-when-wrong-isnt-wrong.html">cross-ring bleed</a> —
+    catching <em>another</em> ring's fraud, not smearing the innocent.</li>
+  </ul>
+
+  <p>That's <strong>graceful degradation</strong>: under pressure the system gets less certain about
+  <em>which</em> ring an account belongs to, not less certain about <em>fraud vs. innocent.</em> Being able
+  to say that — precisely — is what separates an honest pitch from hype.</p>
+
+  <div class="callout catch">
+    <span class="tag">The caveat that proves you understand it</span>
+    <p>Following the money has a cost: the co-target net also scoops up <em>genuine</em> fans of that creator.
+    Someone has to rank those fans back out — and the simple hand-weighted score can't, on its own. That's
+    exactly why this wider net isn't always on, and why the next chapter of the system is a smarter,
+    learned ranker. Retrieval and ranking have to advance <em>together.</em></p>
+  </div>
+
+  <div class="codeptr">
+    <strong>Where this lives in the code:</strong> <code>generator/evasion.py</code> →
+    <code>profile_for</code> is the adversary dial (read the <code>sophisticated</code> profile: residential
+    IPs/ASNs, 1–2 IPs per account). In <code>engine.py</code>, <code>_seed_cohesion</code> detects the thin
+    linkage and <code>_cotarget_candidates</code> casts the money-trail net. The graceful-degradation curve
+    is what <code>eval/sweep.py</code> plots.
+  </div>
+
+  <h2>Check yourself</h2>
+
+  <div class="quiz">
+    <p class="q">As a ring gets more sophisticated, which signal fades the most?</p>
+    <button data-correct="true" data-fb="Yes — residential proxies and per-session fingerprints erase the shared-infrastructure trail.">Linkage — they stop sharing the rare infrastructure it relies on.</button>
+    <button data-correct="false" data-fb="No — co-target survives; viewing the target is the one thing they can't drop.">Co-target — they stop viewing the target creator that pays them.</button>
+    <button data-correct="false" data-fb="No — accounts always have measurable behavior; that signal doesn't vanish.">Behavioral — they stop having any measurable habits at all.</button>
+  </div>
+
+  <div class="quiz">
+    <p class="q">Why does the co-target net still catch a sophisticated ring?</p>
+    <button data-correct="true" data-fb="Right — the payouts require viewing the target; it's the one unavoidable trail.">They must keep viewing the target creator to earn the payouts.</button>
+    <button data-correct="false" data-fb="No — at sophisticated they specifically stop sharing rare datacenter IPs.">They still share the same rare datacenter IPs with each other.</button>
+    <button data-correct="false" data-fb="No — sophisticated rings are tuned to pass the challenge probes, not fail them.">They always fail the active challenge probes the system sends.</button>
+  </div>
+
+  <div class="quiz">
+    <p class="q">Under heavy evasion, ranking AP falls but the legit-FP line holds. The lost precision is mostly…</p>
+    <button data-correct="true" data-fb="Yes — cross-ring bleed: still fraud, just filed under the wrong ring. Graceful degradation.">…another ring's fraud being caught, not innocent viewers flagged.</button>
+    <button data-correct="false" data-fb="No — that's the line that holds; we don't start smearing innocents.">…innocent viewers being flagged far more often than before.</button>
+    <button data-correct="false" data-fb="No — that's retrieval (Stage 1); here we're describing the ranking score.">…the narrow step failing to retrieve any candidates at all.</button>
+  </div>
+
+  <div class="rehearsal">
+    <h3>🎙️ In one breath</h3>
+    <p>Answer the skeptic's "what about a smart fraudster?" in ~25 seconds. A good version:</p>
+    <p style="font-style:italic; color:var(--soft)">"A clever ring hides how it operates — residential
+    proxies, fresh devices — so our infrastructure signal goes quiet. But it can't hide why it exists: every
+    member still has to view the same creator to get paid. So we follow the money instead — who's all
+    viewing this one target in the same window. And when it does get harder, we degrade gracefully: we get
+    fuzzier about which ring someone's in, but we don't start flagging innocent viewers."</p>
+  </div>
+
+  <div class="source">
+    📖 <strong>Primary source (optional):</strong>
+    <a href="https://developers.google.com/machine-learning/recommendation/overview/candidate-generation">Google
+    ML — Candidate Generation</a>, the collaborative-filtering part: retrieving items (or accounts) by what
+    they <em>co-engage</em> with. The detector's co-target net is that idea pointed at a rare target creator.
+  </div>
+
+  <footer class="foot">
+    <p class="ask">💬 That's the whole pipeline, end to end: narrow → rank (four signals) → grade honestly → and what to do when the adversary fights back. Retry all seven quizzes out of order — interleaving is what locks it in.</p>
+    <p><strong>Previously:</strong> <a href="0006-when-wrong-isnt-wrong.html">Lesson 6 — When "Wrong" Isn't Wrong</a>.
+</p>
+    <p>Reference: <a href="../../../GLOSSARY.md">Glossary</a> · <a href="../../walkthrough.md">Walkthrough</a></p>
+  </footer>
+
+</div>
+</body>
+</html>

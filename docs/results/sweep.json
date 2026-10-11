@@ -1,0 +1,70 @@
+{
+  "preset": "default",
+  "seeds": [
+    7,
+    13,
+    21
+  ],
+  "levels": [
+    {
+      "level": "naive",
+      "n_seeds": 3,
+      "mean_ap": 1.0,
+      "mean_stage1_recall": 1.0,
+      "mean_recall_at_k": 1.0,
+      "mean_precision_at_k": 1.0,
+      "operational_precision": 1.0,
+      "legit_fp_rate": 0.0,
+      "cross_ring_frac": 0.0,
+      "flagged_total": 877,
+      "seeds": [
+        7,
+        13,
+        21
+      ],
+      "flagged_this_ring": 877,
+      "flagged_other_ring": 0,
+      "flagged_legit": 0
+    },
+    {
+      "level": "moderate",
+      "n_seeds": 3,
+      "mean_ap": 0.9157,
+      "mean_stage1_recall": 0.9238,
+      "mean_recall_at_k": 0.7805,
+      "mean_precision_at_k": 0.7939,
+      "operational_precision": 0.9845,
+      "legit_fp_rate": 0.0155,
+      "cross_ring_frac": 0.1862,
+      "flagged_total": 1547,
+      "seeds": [
+        7,
+        13,
+        21
+      ],
+      "flagged_this_ring": 1235,
+      "flagged_other_ring": 288,
+      "flagged_legit": 24
+    },
+    {
+      "level": "sophisticated",
+      "n_seeds": 3,
+      "mean_ap": 0.5037,
+      "mean_stage1_recall": 0.5749,
+      "mean_recall_at_k": 0.3708,
+      "mean_precision_at_k": 0.3708,
+      "operational_precision": 0.9464,
+      "legit_fp_rate": 0.0536,
+      "cross_ring_frac": 0.5569,
+      "flagged_total": 3058,
+      "seeds": [
+        7,
+        13,
+        21
+      ],
+      "flagged_this_ring": 1191,
+      "flagged_other_ring": 1703,
+      "flagged_legit": 164
+    }
+  ]
+}

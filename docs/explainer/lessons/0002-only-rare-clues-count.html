@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lesson 2 — Only Rare Clues Count</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+  <script src="../assets/quiz.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="course">fraudrings · How the detector works</p>
+    <h1><span class="lesson-no">Lesson 2.</span> Only Rare Clues Count</h1>
+    <p class="mission-tie">What makes a shared clue actually mean something — the heart of the "narrow" step.</p>
+  </header>
+
+  <p>Last lesson: The detector <strong>narrows, then ranks</strong>. The narrow step pulls in accounts that
+  "share something" with your seeds. But here's the catch a sharp viewer will immediately raise:
+  <em>everybody shares things.</em> Millions of accounts use the same big phone networks. So what makes
+  a shared clue actually <em>mean</em> something?</p>
+
+  <div class="bigidea">
+    <p class="label">The one idea</p>
+    <p class="punch">A shared clue is only evidence when it's <em>rare</em>.</p>
+    <p>Common overlaps are coincidence and prove nothing. Rare overlaps demand an explanation — and
+    "they're working together" is the explanation. The rarer the shared clue, the louder it speaks.</p>
+  </div>
+
+  <h2>The analogy: the suspicious coincidence</h2>
+
+  <div class="callout analogy">
+    <span class="tag">Analogy</span>
+    <p>"We were both in France this year." So were millions of people — <em>means nothing.</em></p>
+    <p>"We both stayed in the same eight-bed hostel in one tiny village, on the same night." That is not
+    chance — <em>you two are connected somehow.</em></p>
+    <p>Same fact ("we overlapped"), wildly different weight — and the <strong>only</strong> thing that
+    changed is how <em>rare</em> the overlap is.</p>
+  </div>
+
+  <p>The detector's "clues" are technical fingerprints two accounts can share: an IP address, a network
+  provider (ASN), a device fingerprint, a browser cookie. Sharing a giant mobile carrier is the
+  "both in France" coincidence — tens of thousands of innocent people do. Sharing one obscure
+  datacenter IP that only four accounts have ever touched is the tiny-hostel coincidence — that needs
+  explaining.</p>
+
+  <h2>Turning "rare" into a number</h2>
+
+  <p>The detector gives every identifier a <strong>rarity</strong> score: <em>small</em> when lots of accounts
+  share it, <em>large</em> when very few do. When two accounts share a high-rarity identifier, that's a
+  strong link; sharing a low-rarity one barely moves the needle.</p>
+
+  <div class="callout">
+    <span class="tag">For the curious — one line of notation, then forget it</span>
+    <p>The score is literally <code>log( total accounts ÷ accounts that share this clue )</code>. If
+    everyone shares it, that ratio is ~1 and the score is ~0 (no surprise). If 4-in-a-million share it,
+    the ratio is huge and so is the score. This exact formula is a famous search-engine idea called
+    <strong>IDF</strong> — it's how Google decides that "the" matters less than "the detector" in your query.
+    You don't need the formula to explain it; "rarer = stronger" is the whole story.</p>
+  </div>
+
+  <h2>The two-sided filter (this is the part skeptics love)</h2>
+
+  <p>The detector won't even <em>use</em> an identifier unless its sharing count sits in a sensible middle
+  band — here, <strong>between 2 and ~150 accounts</strong>:</p>
+
+  <ul>
+    <li><strong>Shared by only 1 account?</strong> Useless — there's nobody on the other end to link to.</li>
+    <li><strong>Shared by 150+ accounts?</strong> Thrown out — that's a coffee shop's Wi-Fi or a big
+    carrier, not a ring. <em>This is the cut that stops innocent strangers from being framed for sharing
+    public infrastructure.</em></li>
+  </ul>
+
+  <p>Keep the rare-but-not-unique middle; ignore the rest. That single rule is most of why the detector's net
+  is precise instead of a dragnet.</p>
+
+  <div class="callout catch">
+    <span class="tag">The honest caveat — say it before a skeptic does</span>
+    <p>"Couldn't a few innocent people share a rare IP by sheer bad luck?" Yes. Rarity makes a link
+    <em>strong</em>, not <em>certain</em>. That's exactly why this is only <em>one</em> of four signals,
+    and why the detector <em>ranks</em> suspects rather than convicting them. (The other three are next.)</p>
+  </div>
+
+  <div class="codeptr">
+    <strong>Where this lives in the code:</strong> <code>detector/ingest.py</code> builds the
+    <code>identifier_stats</code> table with <code>rarity = ln(N / distinct_accounts)</code>. The
+    two-sided filter is the <code>distinct_accounts BETWEEN 2 AND 150</code> gate in
+    <code>engine.py</code> (the numbers are <code>expand_min_accounts</code> / <code>expand_max_accounts</code>
+    in <code>config.py</code>). This rarity score is the first scoring signal, called <strong>linkage</strong>.
+  </div>
+
+  <h2>Check yourself</h2>
+
+  <div class="quiz">
+    <p class="q">Two accounts share one network identifier. Which makes it strong evidence they're linked?</p>
+    <button data-correct="true" data-fb="Yes — rare sharing is the suspicious-coincidence; few others have it.">The identifier is shared by only a few other accounts.</button>
+    <button data-correct="false" data-fb="Common sharing is coincidence — thousands having it proves nothing.">The identifier is shared by many thousands of accounts.</button>
+    <button data-correct="false" data-fb="If everyone has it, it can't single anyone out at all.">The identifier is shared by every account in the system.</button>
+  </div>
+
+  <div class="quiz">
+    <p class="q">Why does the detector ignore an IP that 5,000 accounts use?</p>
+    <button data-correct="true" data-fb="Right — too common to single anyone out; it's shared public infrastructure.">It's too common to single anyone out — likely shared infrastructure.</button>
+    <button data-correct="false" data-fb="Backwards — 5,000 sharers is common, not rare; rarity isn't the issue here.">It's too rare to single anyone out — likely a spoofed address.</button>
+    <button data-correct="false" data-fb="The reason is meaning, not speed — a common clue carries no signal.">It's too costly to score, so the engine skips it for speed.</button>
+  </div>
+
+  <div class="rehearsal">
+    <h3>🎙️ In one breath</h3>
+    <p>Explain in ~15 seconds why a shared coffee-shop Wi-Fi isn't evidence but a shared rare device is.
+    A good version:</p>
+    <p style="font-style:italic; color:var(--soft)">"Sharing something common is just coincidence — like
+    both being in France. Sharing something rare demands an explanation — like both being in the same
+    tiny hostel the same night. So the detector only counts the rare overlaps, and ignores anything common
+    enough to be public infrastructure."</p>
+  </div>
+
+  <div class="source">
+    📖 <strong>Primary source (optional):</strong>
+    <a href="https://nlp.stanford.edu/IR-book/html/htmledition/inverse-document-frequency-1.html">Stanford,
+    <em>Introduction to Information Retrieval</em> — Inverse Document Frequency</a>. The textbook origin of
+    "rare = informative." Skim the first two paragraphs: their <code>log(N/df)</code> is the exact formula
+    in your <code>ingest.py</code>.
+  </div>
+
+  <footer class="foot">
+    <p class="ask">💬 Worth asking next: "If rarity isn't certainty, what catches the rest?" — that's literally the next two signals.</p>
+    <p><strong>Previously:</strong> <a href="0001-narrow-then-rank.html">Lesson 1 — Narrow, then Rank</a>.
+    <br><strong>Next up — Lesson 3:</strong> the four lines of evidence, and how the detector blends them into
+    one ranked score.</p>
+    <p>Reference: <a href="../../../GLOSSARY.md">Glossary</a> · <a href="../../walkthrough.md">Walkthrough</a></p>
+  </footer>
+
+</div>
+</body>
+</html>
