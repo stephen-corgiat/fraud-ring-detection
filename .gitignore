@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.pyright/
+
+# Generated artifacts (synthetic data + db are reproducible from a seed)
+/data/
+*.duckdb
+*.duckdb.wal
+*.parquet
+
+# Local scratch space
+.scratch/
