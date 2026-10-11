@@ -2,7 +2,8 @@
 
 This is a guided case, start to finish, through the two pages of `fraudrings view`. Every
 number below comes from a seeded world, so you can follow along and see exactly the same screens.
-Each step links to its view, and every link is reproducible.
+Each step links to its view in the [live app](https://fraud-ring-detection.streamlit.app/ "May take about 30 seconds to wake if it has been idle") (free tier: it may take about 30 seconds to wake),
+and every link is reproducible.
 
 > **The setting.** A content platform pays creators per *qualified view* — a view whose reported
 > progress clears a payout threshold. Somewhere in its event stream, operators are running rings of
@@ -55,7 +56,7 @@ The seeded engine needs a few accounts you already suspect. Nobody hands you tho
 **Triage** page starts from nothing but events. It asks which **creators'** qualified views are
 concentrated in ways organic popularity rarely produces.
 
-Open the naive world: `/?preset=default&level=naive&seed=7`.
+Open the naive world: [`/?preset=default&level=naive&seed=7`](https://fraud-ring-detection.streamlit.app/?preset=default&level=naive&seed=7 "May take about 30 seconds to wake if it has been idle").
 
 ### Read the queue
 
@@ -114,7 +115,7 @@ gate stays closed and the core itself is the output, because expanding would fan
 
 ### Now the one that isn't a ring
 
-Open rank 3 (`&rank=3`), creator 136:
+Open rank 3 ([`&rank=3`](https://fraud-ring-detection.streamlit.app/?preset=default&level=naive&seed=7&rank=3 "May take about 30 seconds to wake if it has been idle")), creator 136:
 
 ![Suspect creator 136](images/walkthrough/07-suspect-organic.png)
 
@@ -145,7 +146,7 @@ for the reveal.
 
 ## Act 2 · Investigate — recover the ring
 
-Back on creator 1, press **🔎 Investigate this core →** (or open `/investigate?…&creator=1`). The core
+Back on creator 1, press **🔎 Investigate this core →** (or open [`/investigate?…&creator=1`](https://fraud-ring-detection.streamlit.app/investigate?preset=default&level=naive&seed=7&creator=1 "May take about 30 seconds to wake if it has been idle")). The core
 becomes the **seeds** for the Investigate page.
 
 ![Handoff: the core arrives as seeds](images/walkthrough/10-handoff-seeds.png)
@@ -222,7 +223,7 @@ ground truth on, the sidebar keeps score.
 ## Act 3 · Turn the dial
 
 Naive rings are easy by design. Switch the sidebar to `sophisticated` and investigate ring 1 from
-three known members (`/investigate?…&level=sophisticated&ring=1`).
+three known members ([`/investigate?…&level=sophisticated&ring=1`](https://fraud-ring-detection.streamlit.app/investigate?preset=default&level=sophisticated&seed=7&ring=1 "May take about 30 seconds to wake if it has been idle")).
 
 ![Related accounts at sophisticated](images/walkthrough/20-related-sophisticated.png)
 
@@ -259,7 +260,7 @@ sophisticated it lifts recall from 0.37 to 1.00 with legit false positives at 4%
 
 ## Act 4 · When the only tell is time
 
-Set **operator concurrency** to `4` (`&conc=4`). Each ring is now an operator that can only drive four
+Set **operator concurrency** to `4` ([`&conc=4`](https://fraud-ring-detection.streamlit.app/investigate?preset=default&level=sophisticated&seed=7&conc=4&ring=1 "May take about 30 seconds to wake if it has been idle")). Each ring is now an operator that can only drive four
 accounts at once, while a benign bandwagon piles onto the same creator in the same window, uncapped.
 The cap is the *only* difference between them. A **temporal raster** appears at the bottom of the
 Investigate page.

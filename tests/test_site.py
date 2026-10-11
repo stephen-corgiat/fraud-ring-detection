@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 import struct
 import sys
 import zlib
@@ -126,9 +127,9 @@ def _png(w: int, h: int) -> bytes:
 
 
 def _mini_docs(tmp: Path, md: str, charts: dict[str, dict] | None = None) -> Path:
+    """A copy of the real docs plus one extra page (`page.md`) and any extra chart files."""
     docs = tmp / "docs"
-    (docs / "images").mkdir(parents=True)
-    (docs / "charts").mkdir()
+    shutil.copytree(ROOT / "docs", docs)
     (docs / "images" / "a.png").write_bytes(_png(4, 2))
     (docs / "page.md").write_text(md)
     for name, meta in (charts or {}).items():
@@ -172,7 +173,8 @@ def test_descriptions_keep_words_apart(site: Path) -> None:
 
 def test_every_chart_directive_in_the_docs_is_consumed(site: Path) -> None:
     wanted = sum(p.read_text().count("<!-- chart:") for p in (ROOT / "docs").rglob("*.md"))
-    got = sum(p.read_text().count('data-chart="') for p in site.rglob("*.html"))
+    got = sum(p.read_text().count('data-chart="') for p in site.rglob("*.html") if p.name != "index.html"
+              or p.parent != site)  # the home page's own chart is placed by its template
     assert wanted == got and wanted >= 4
 
 
@@ -180,3 +182,45 @@ def test_nav_toggle_only_exists_with_js() -> None:
     css = (ROOT / "site/assets/nav.css").read_text()
     assert ".js .site-nav .nav-toggle { display: block; }" in css
     assert ".site-nav .nav-toggle { display: none;" in css
+
+
+def test_headline_numbers_come_from_the_results_file(site: Path) -> None:
+    row = next(r for r in json.loads((ROOT / "docs/results/rule_grades.json").read_text())["levels"]
+               if r["level"] == "sophisticated")
+    home = (site / "index.html").read_text()
+    want = f"{row['baseline_recall_at_k']:.2f} → {row['recall']:.2f}"
+    assert want in home and f"{row['legit_fp_rate']:.0%}" in home
+
+
+def test_home_pitch_and_ring_paragraph_are_the_readmes(site: Path) -> None:
+    readme = (ROOT / "README.md").read_text()
+    home = (site / "index.html").read_text()
+    for name in ("pitch", "ring"):
+        block = re.search(rf"<!-- site:{name} -->\n(.*?)\n<!-- /site:{name} -->", readme, re.S)
+        assert block
+        probe = block.group(1).split(".")[0].replace("**", "")
+        assert probe in home.replace("<strong>", "").replace("</strong>", ""), name
+
+
+def test_every_live_app_link_is_the_configured_one_and_has_a_title(site: Path) -> None:
+    cfg = B.Config.load(ROOT)
+    host = urlsplit(cfg.live_app_url).netloc
+    seen = 0
+    for page in site.rglob("*.html"):
+        for m in re.finditer(r'<a\b[^>]*href="([^"]*)"[^>]*>', page.read_text()):
+            if host in m.group(1):
+                seen += 1
+                assert m.group(1).startswith(cfg.live_app_url), (page, m.group(1))
+                assert ' title="' in m.group(0), f"{page.relative_to(site)}: live-app link without a title"
+    assert seen > 10
+    readme = (ROOT / "README.md").read_text()
+    for m in re.finditer(r"\]\((https?://[^)\s]*" + re.escape(host) + r"[^)\s]*)( \"[^\"]+\")?\)", readme):
+        assert m.group(2), f"README live-app link without a title: {m.group(1)}"
+
+
+def test_nav_has_every_item_on_every_page(site: Path) -> None:
+    labels = ["Home", "Tour", "Walkthrough", "Lessons", "Research", "Decisions", "Live app ↗", "GitHub ↗"]
+    for page in site.rglob("*.html"):
+        nav = re.search(r'<header class="site-nav".*?</header>', page.read_text(), re.S)
+        assert nav, page
+        assert re.findall(r">([^<]+)</a>", nav.group(0))[1:] == labels, page.relative_to(site)

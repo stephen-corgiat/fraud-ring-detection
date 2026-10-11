@@ -4,17 +4,65 @@
 <main>
   <section class="hero">
     <h1>{{ cfg.title }}</h1>
-    <p class="lede">{{ cfg.tagline }}</p>
+    <div class="lede">{{ pitch }}</div>
+    {% if demo %}
+    <video class="demo" muted loop playsinline preload="metadata" poster="{{ root }}images/site/demo-poster.png"
+           aria-label="A recorded session: triage a suspect creator, hand its core to the investigator, recover the ring, then the temporal view.">
+      <source src="{{ root }}images/site/demo.webm" type="video/webm">
+      <source src="{{ root }}images/site/demo.mp4" type="video/mp4">
+    </video>
+    {% endif %}
     <p class="buttons">
-      <a class="btn primary" href="{{ cfg.live_app_url }}" rel="noopener" title="If the app has been idle it may take about 30 seconds to wake.">Try the live app ↗</a>
-      <a class="btn" href="{{ root }}walkthrough.html">Read the walkthrough</a>
+      <a class="btn primary" href="{{ cfg.live_app_url }}" rel="noopener" title="{{ live_app_title }}">Try the live app ↗</a>
+      <a class="btn" href="{{ root }}tour.html">Take the tour</a>
       <a class="btn" href="{{ cfg.repo_url }}" rel="noopener">GitHub ↗</a>
     </p>
     <p class="note">The live app is free-tier: if it has been idle, it may take about 30 seconds to wake.</p>
   </section>
-  <section class="cards">
+
+  <section class="section">
+    <h2>What's a fraud ring?</h2>
+    <div class="prose-block">{{ ring }}</div>
+  </section>
+
+  <section class="section">
+    <h2>How it works</h2>
+    <div class="grid steps">
+      <a class="card step" href="{{ root }}tour.html#2-pick-a-world">
+        {{ thumb('images/walkthrough/01-sidebar-world.png', 'The sidebar that picks a simulated world: preset, evasion level and seed.') }}
+        <h3><span class="n">1</span> Simulate a world</h3>
+        <p>A seeded platform with honest crowds and fraud rings, and an evasion dial for how hard the rings try to look organic.</p>
+      </a>
+      <a class="card step" href="{{ root }}tour.html#3-read-the-triage-queue">
+        {{ thumb('images/walkthrough/02-triage-queue.png', 'The triage queue: suspect creators ranked from raw events.') }}
+        <h3><span class="n">2</span> Triage from raw events</h3>
+        <p>Rank creators whose views concentrate, read the evidence, and call each one a ring or organic.</p>
+      </a>
+      <a class="card step" href="{{ root }}tour.html#5-hand-off-and-investigate">
+        {{ thumb('images/walkthrough/12-related.png', 'Related accounts recovered from a few seeds, with the evidence behind each score.') }}
+        <h3><span class="n">3</span> Investigate from seeds</h3>
+        <p>Hand a suspect's core to the investigator and recover the rest of the ring, with the evidence behind every score.</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>The headline result</h2>
+    <div class="stats">
+      <div class="stat"><div class="num">{{ headline.baseline_recall }} → {{ headline.recall }}</div>
+        <div class="what">recall on held-out rings, hand-weighted score → learned rule</div></div>
+      <div class="stat"><div class="num">{{ headline.legit_fp }}</div>
+        <div class="what">legit false-positive rate: the share of flagged accounts that are real viewers</div></div>
+    </div>
+    <p class="stat-note">At the sophisticated level, the hardest adversary. <em>Held-out</em> means the
+    rule is scored on rings it never saw in training. <a href="{{ root }}research/method.html">How that is measured.</a></p>
+    {{ chart('results-dial', 'Three panels across the evasion dial: the seeded engine, recall on held-out rings, and the seedless ranker.', 'images/results/dial.png') }}
+  </section>
+
+  <section class="section cards">
     <h2>Go deeper</h2>
     <div class="grid">
+      <a class="card" href="{{ root }}tour.html"><h3>Tour</h3><p>Ten minutes in the tool, step by step.</p></a>
       <a class="card" href="{{ root }}walkthrough.html"><h3>Walkthrough</h3><p>An illustrated case, from triage to a recovered ring.</p></a>
       <a class="card" href="{{ root }}explainer/"><h3>Lessons</h3><p>The detector in seven plain-language lessons, each with a quiz.</p></a>
       <a class="card" href="{{ root }}research/"><h3>Research</h3><p>How to measure a detector without real labels, and what the literature says.</p></a>

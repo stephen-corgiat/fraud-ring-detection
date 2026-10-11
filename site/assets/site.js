@@ -56,6 +56,12 @@
     }).catch(function () { fallback(fig); });
   }
 
+  // The demo video starts only when the visitor hasn't asked for reduced motion; otherwise the poster stays.
+  var demo = document.querySelector('video.demo');
+  if (demo && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+    demo.play().catch(function () { /* autoplay blocked: the poster stays */ });
+  }
+
   var figs = document.querySelectorAll('figure.chart[data-chart]');
   if (!figs.length) return;
   if ('IntersectionObserver' in window) {

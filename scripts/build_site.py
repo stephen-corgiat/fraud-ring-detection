@@ -31,13 +31,15 @@ import tomllib
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from jinja2 import Environment, FileSystemLoader, select_autoescape
+from jinja2 import Environment, FileSystemLoader, pass_context, select_autoescape
 from markdown_it import MarkdownIt
 from markdown_it.token import Token
+from markupsafe import Markup
 
 ROOT = Path(__file__).resolve().parents[1]
 CHART_RE = re.compile(r"^<!--\s*chart:\s*([\w-]+)\s*-->$")
 SCHEME_RE = re.compile(r"^(?:[a-z][a-z0-9+.-]*:|//)", re.I)
+LIVE_APP_TITLE = "Opens the live demo. If it has been idle it may take about 30 seconds to wake."
 MAX_CHART_BYTES = 250_000
 MAX_PAGE_CHART_BYTES = 1_000_000
 # Docs subtrees that are inputs to scripts, not part of the site.
@@ -51,8 +53,6 @@ class BuildError(Exception):
 @dataclass
 class Config:
     title: str
-    tagline: str
-    description: str
     site_url: str
     live_app_url: str
     repo_url: str
@@ -136,10 +136,79 @@ class Site:
             autoescape=select_autoescape(["html"]),
             trim_blocks=True, lstrip_blocks=True,
         )
+        self.env.globals["chart"] = self._chart_helper()
+        self.env.globals["thumb"] = self._thumb_helper()
+        self.env.globals["live_app_title"] = LIVE_APP_TITLE
+        self.pitch_html, self.pitch_text = self._readme_block("pitch")
+        self.ring_html, _ = self._readme_block("ring")
         self.sources = sorted(p.relative_to(docs).as_posix() for p in docs.rglob("*.md"))
         self.pages: dict[str, Page] = {s: Page(s, out_path(s)) for s in self.sources}
         self.charts = self._load_charts()
         self.written: list[str] = []  # every html file, for the sitemap
+
+    # -- single-sourced copy from the README ---------------------------------------------------
+
+    def _readme_block(self, name: str) -> tuple[Markup, str]:
+        """The README paragraph between `<!-- site:name -->` markers, as HTML and as plain text."""
+        text = (self.root / "README.md").read_text()
+        m = re.search(rf"<!-- site:{name} -->\n(.*?)\n<!-- /site:{name} -->", text, re.S)
+        if not m:
+            raise BuildError(f"README.md: missing <!-- site:{name} --> ... <!-- /site:{name} --> markers")
+        body = m.group(1).strip()
+        if re.search(r"\]\((?!https?://)", body):
+            raise BuildError(f"README.md: the site:{name} block has a relative link; the site can't resolve it")
+        plain = re.sub(r"\s+", " ", re.sub(r"[*_`]|\[([^\]]*)\]\([^)]*\)", r"\1", body)).strip()
+        return Markup(self.md.render(body)), plain
+
+    def headline(self) -> dict[str, str]:
+        """The headline result, read from docs/results/rule_grades.json and rounded as the README does."""
+        data = json.loads((self.docs / "results" / "rule_grades.json").read_text())
+        row = next(r for r in data["levels"] if r["level"] == "sophisticated")
+        return {
+            "baseline_recall": f"{row['baseline_recall_at_k']:.2f}",
+            "recall": f"{row['recall']:.2f}",
+            "legit_fp": f"{row['legit_fp_rate']:.0%}",
+        }
+
+    # -- helpers shared by markdown and templates ----------------------------------------------
+
+    def _figure(self, name: str, caption: str, fallback_url: str, page_out: str) -> str:
+        src_json = rel_url(f"charts/{name}.json", page_out)
+        return (
+            f'<figure class="chart" data-chart="{name}" data-src="{src_json}">'
+            f'<noscript><img src="{html.escape(fallback_url)}" alt="{html.escape(caption, quote=True)}"></noscript>'
+            f"<figcaption>{html.escape(caption)}</figcaption></figure>\n"
+        )
+
+    def _chart_helper(self):
+        site = self
+
+        @pass_context
+        def chart(ctx, name: str, caption: str, fallback: str) -> Markup:
+            """`{{ chart('results-dial', 'caption', 'images/results/dial.png') }}` in a template."""
+            if name not in site.charts:
+                raise BuildError(f"{ctx['page_out']}: unknown chart {name!r}")
+            if name not in ctx["charts"]:
+                raise BuildError(f"{ctx['page_out']}: chart {name!r} used but not declared in the page's charts")
+            return Markup(site._figure(name, caption, rel_url(fallback, ctx["page_out"]), ctx["page_out"]))
+
+        return chart
+
+    def _thumb_helper(self):
+        site = self
+
+        @pass_context
+        def thumb(ctx, path: str, alt: str) -> Markup:
+            """A lazy `<img>` for a docs image at half its pixel size (captures are 2x)."""
+            f = site.docs / path
+            if not f.is_file():
+                raise BuildError(f"{ctx['page_out']}: thumbnail {path!r} not found")
+            size = image_size(f)
+            dims = f' width="{size[0] // 2}" height="{size[1] // 2}"' if size else ""
+            return Markup(f'<img src="{rel_url(path, ctx["page_out"])}" alt="{html.escape(alt, quote=True)}"'
+                          f' loading="lazy"{dims}>')
+
+        return thumb
 
     # -- charts ----------------------------------------------------------------------------
 
@@ -228,14 +297,8 @@ class Site:
             raise BuildError(f"{page.src}: unknown chart {name!r} (no docs/charts/{name}.json)")
         page.charts.append(name)
         fallback, _ = self.rewrite(str(img.attrGet("src")), page)
-        alt = html.escape(img.content, quote=True)
-        src_json = rel_url(f"charts/{name}.json", page.out)
         tok = Token("html_block", "", 0)
-        tok.content = (
-            f'<figure class="chart" data-chart="{name}" data-src="{src_json}">'
-            f'<noscript><img src="{html.escape(fallback)}" alt="{alt}"></noscript>'
-            f"<figcaption>{html.escape(img.content)}</figcaption></figure>\n"
-        )
+        tok.content = self._figure(name, img.content, fallback, page.out)
         return tok
 
     def _fix_inline(self, inline: Token, page: Page) -> None:
@@ -273,7 +336,7 @@ class Site:
         nav = []
         for label, target, section in items:
             if not self._exists(target):
-                continue  # a page that has not been written yet (the build prints what it skipped)
+                raise BuildError(f"nav: {label} points at {target}, which is not built")
             active = out == section if section.endswith(".html") else out.startswith(section)
             nav.append({"label": label, "href": rel_url(target, out), "active": active})
         nav.append({"label": "Live app ↗", "href": cfg.live_app_url, "external": True,
@@ -295,7 +358,9 @@ class Site:
             "canonical": self.cfg.site_url + out.removesuffix("index.html"),
             "og_image": self.cfg.site_url + "images/site/social.png" if social else "",
             "plotly_url": self.cfg.plotly_url, "charts": [],
-            "title": self.cfg.title, "description": self.cfg.description,
+            "title": self.cfg.title, "description": self.pitch_text, "page_out": out,
+            "pitch": self.pitch_html, "ring": self.ring_html, "headline": self.headline(),
+            "demo": (self.docs / "images/site/demo.mp4").exists(),
         }
         ctx.update(extra)
         return ctx
@@ -316,22 +381,28 @@ class Site:
         page_tpl = self.env.get_template("page.html")
         for page in self.pages.values():
             self.render(page)
-            budget = sum(self.charts[c] for c in page.charts)
-            if budget > MAX_PAGE_CHART_BYTES:
-                raise BuildError(f"{page.src}: {budget} bytes of chart JSON exceeds the {MAX_PAGE_CHART_BYTES} budget")
+            self._check_budget(page.src, page.charts)
             title = page.title or self.cfg.title
             self.write(page.out, page_tpl.render(self.context(
                 page.out, content=page.html, charts=page.charts,
                 title=f"{title} · {self.cfg.title}" if page.out != "index.html" else title,
-                description=page.description or self.cfg.description,
+                description=page.description or self.pitch_text,
             )))
 
         # templated pages
-        self.write("index.html", self.env.get_template("home.html").render(self.context("index.html")))
+        home_charts = ["results-dial"]
+        self._check_budget("index.html", home_charts)
+        self.write("index.html", self.env.get_template("home.html").render(
+            self.context("index.html", charts=home_charts)))
         self.write("404.html", self.env.get_template("404.html").render(
             self.context("404.html", title=f"Not found · {self.cfg.title}")))
         self._copy_static()
         self._write_sitemap()
+
+    def _check_budget(self, where: str, names: list[str]) -> None:
+        budget = sum(self.charts[c] for c in names)
+        if budget > MAX_PAGE_CHART_BYTES:
+            raise BuildError(f"{where}: {budget} bytes of chart JSON exceeds the {MAX_PAGE_CHART_BYTES} budget")
 
     def _copy_static(self) -> None:
         shutil.copytree(self.root / "site" / "assets", self.out / "assets")

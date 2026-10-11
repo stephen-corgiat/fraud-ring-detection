@@ -1,8 +1,12 @@
 # fraud-ring-detection
 
+[**Website**](https://stephen-corgiat.github.io/fraud-ring-detection/) · [**Live demo**](https://fraud-ring-detection.streamlit.app/ "May take about 30 seconds to wake if it has been idle") · [**Tour**](https://stephen-corgiat.github.io/fraud-ring-detection/tour.html)
+
+<!-- site:pitch -->
 A seeded simulator, reference detector and evaluation harness for coordinated fraud rings, with an
 investigator UI. It measures how well you catch rings against an adversary that tries harder and
 harder to look organic, without needing a single real label.
+<!-- /site:pitch -->
 
 ![Triage a creator whose views concentrate, read its dedicated core, hand it to the investigator, recover the ring, and see the lock-step operator in the temporal raster.](docs/images/walkthrough/hero.gif)
 
@@ -10,6 +14,7 @@ harder to look organic, without needing a single real label.
 [Results](#results) · [How it's measured](#how-its-measured) · [Research](#research) ·
 [Layout](#layout)
 
+<!-- site:ring -->
 A **fraud ring** is a set of accounts controlled by one operator and made to look like many
 independent people. On a platform that pays creators per engagement, a ring pumps up chosen
 creators, often its own or paying clients, to collect payouts that no real audience earned. The same
@@ -18,6 +23,7 @@ in a ring looks guilty: each views a few items, at plausible hours, from an ordi
 The ring shows only in what its accounts share: infrastructure, targets, habits, bursts in time. So
 catching one means judging accounts together, not one at a time. Careful operators know that, and
 they rotate IPs, jitter their timing, add cover traffic and age their accounts to blur the pattern.
+<!-- /site:ring -->
 
 Labeled data for coordinated fraud is private everywhere, which makes most fraud detectors
 impossible to evaluate honestly. This project builds the world first: a platform where accounts view
@@ -58,6 +64,8 @@ pip install "fraud-ring-detection[viz,ml] @ git+https://github.com/stephen-corgi
 core — generator, detector, sweep — needs neither.
 
 ## Try it
+
+No install needed: the [live demo](https://fraud-ring-detection.streamlit.app/ "May take about 30 seconds to wake if it has been idle") runs the same app on simulated data (your labels stay in your tab). To run it on your own machine:
 
 ```sh
 fraudrings view
