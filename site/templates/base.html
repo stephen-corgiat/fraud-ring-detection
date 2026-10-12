@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ title }}</title>
   <meta name="description" content="{{ description }}">
+  <meta name="author" content="{{ cfg.author }}">
   <link rel="canonical" href="{{ canonical }}">
   <meta property="og:type" content="website">
   <meta property="og:title" content="{{ title }}">
@@ -31,7 +32,7 @@
 {% include "nav.html" %}
 {% block main %}{% endblock %}
 <footer class="site-footer">
-  <p>Apache-2.0 · <a href="{{ cfg.repo_url }}" rel="noopener">GitHub</a> ·
+  <p>Built by {{ cfg.author }} · <a href="{{ cfg.repo_url }}" rel="noopener">Source on GitHub</a> · Apache-2.0 ·
   Built from the repo's markdown by <a href="{{ cfg.repo_url }}/blob/{{ cfg.repo_branch }}/scripts/build_site.py" rel="noopener">one Python script</a>;
   every number comes from a committed results file or the seeded demo world.</p>
 </footer>

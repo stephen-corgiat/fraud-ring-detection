@@ -53,6 +53,7 @@ class BuildError(Exception):
 @dataclass
 class Config:
     title: str
+    author: str
     site_url: str
     live_app_url: str
     repo_url: str
