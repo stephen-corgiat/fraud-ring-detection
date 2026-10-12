@@ -40,7 +40,7 @@ def test_hosted_labels_are_per_session(tmp_path, monkeypatch) -> None:
         return any("current:" in c.value for c in at.caption)
 
     a, b = open_session(), open_session()
-    assert any("Public demo" in c.value for c in a.caption)
+    assert any("Everything here is simulated" in m.value for m in a.markdown)
     a.radio[0].set_value("ring")
     save = [x for x in a.button if x.label == "save label"]
     assert save, "triage should offer a save-label button"

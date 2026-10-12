@@ -65,11 +65,14 @@ html, body, [class*="css"], .stApp,
 section[data-testid="stSidebar"] * , .stMarkdown, .stButton>button {
   font-family: 'IBM Plex Sans', system-ui, sans-serif;
 }
+/* the font rule above would otherwise turn Material icons into their ligature names */
+[data-testid="stIconMaterial"] { font-family: 'Material Symbols Rounded' !important; }
 .stApp { background: #0e1116; }
 
-/* hide default Streamlit chrome — the viewer supplies its own top bar */
+/* hide default Streamlit chrome — the viewer supplies its own top bar. The header and toolbar
+   stay in the layout (invisible) because they hold the button that re-opens a collapsed sidebar. */
 #MainMenu, footer, header[data-testid="stHeader"] { visibility: hidden; height: 0; }
-[data-testid="stToolbar"] { display: none; }
+[data-testid="stExpandSidebarButton"] { visibility: visible; }
 /* Plotly toolbar: keep it (lasso-to-reseed needs its select tools) but only on hover */
 .modebar-container { opacity: 0; transition: opacity .15s; }
 .js-plotly-plot:hover .modebar-container { opacity: 1; }
@@ -134,16 +137,22 @@ hr { border-color: #1b2027 !important; }
   display:inline-flex; align-items:center; gap:7px; padding:4px 10px; background:#161b22;
   border:1px solid #2a3543; border-radius:5px; font-size:12px; color:#b9c0ca;
 }
-.ath-pill .knob { width:26px; height:14px; border-radius:8px; position:relative; display:inline-block; }
-.ath-pill .knob i { position:absolute; top:1px; width:12px; height:12px; border-radius:50%; }
-.ath-pill .knob.on  { background:#3a5a8c; } .ath-pill .knob.on  i { right:1px; background:#cfe0f5; }
-.ath-pill .knob.off { background:#2a323d; } .ath-pill .knob.off i { left:1px; background:#6f7681; }
+.ath-pill { cursor:help; }
+.ath-pill .d { width:7px; height:7px; border-radius:50%; display:inline-block; }
+.ath-pill .d.on { background:#6f9fe0; } .ath-pill .d.off { background:#6f7681; }
 .ath-brand .name, .ath-brand .sub, .ath-pill, .ath-topbar .meta .mono { white-space:nowrap; }
 @media (max-width: 640px) {
   /* narrow screens: stack the brand over the stats instead of squeezing both onto one line */
   .ath-topbar { flex-wrap:wrap; height:auto; padding:8px 12px; gap:6px 12px; }
   .ath-topbar .meta { gap:10px; flex-wrap:wrap; }
 }
+
+.ath-intro { font-size:13px; line-height:1.55; color:#aeb5bf; max-width:1100px; margin:0 0 10px; }
+.ath-intro b { color:#e6e9ee; font-weight:600; }
+.ath-intro a, .ath-credit a { color:#8fb4e8; text-decoration:none; }
+.ath-intro a:hover, .ath-credit a:hover { text-decoration:underline; }
+.ath-credit { margin-top:28px; padding-top:12px; border-top:1px solid #1b2027;
+  font-size:11.5px; line-height:1.6; color:#6f7681; }
 
 .ath-crumb {
   display:flex; align-items:center; gap:10px; flex-wrap:wrap;
@@ -264,13 +273,40 @@ def _esc(v: object) -> str:
     return _html.escape(str(v))
 
 
+# --- intro / credit -------------------------------------------------------------------------
+
+def intro(site_url: str, repo_url: str) -> None:
+    """One-paragraph "what is this" for the hosted demo, with links to the project site and source."""
+    _md(
+        '<div class="ath-intro"><b>fraudrings</b> finds <b>fraud rings</b>: groups of accounts run by one '
+        "operator to look like many independent people, pumping up chosen creators to collect payouts "
+        "no real audience earned. <b>Triage</b> ranks suspect creators from the raw event stream; "
+        "<b>Investigate</b> starts from a few suspect accounts and recovers the rest of the ring. "
+        "Everything here is simulated, and your labels stay in this tab. "
+        f'<a href="{_esc(site_url)}" target="_blank">What is this?</a> · '
+        f'<a href="{_esc(site_url)}tour.html" target="_blank">Two-minute tour</a> · '
+        f'<a href="{_esc(repo_url)}" target="_blank">Source on GitHub</a></div>'
+    )
+
+
+def credit(author: str, site_url: str, repo_url: str) -> None:
+    """Author line at the foot of the sidebar."""
+    _md(
+        f'<div class="ath-credit">Built by {_esc(author)}<br>'
+        f'<a href="{_esc(site_url)}" target="_blank">Project site</a> · '
+        f'<a href="{_esc(repo_url)}" target="_blank">GitHub</a></div>'
+    )
+
+
 # --- top bar / breadcrumb -------------------------------------------------------------------
 
 def top_bar(n_accounts: int, n_fraud: int, show_truth: bool, page: str = "investigate") -> None:
-    """Sticky-style brand bar: name + page, live world stats, and a ground-truth state indicator (the
-    real toggle lives in the sidebar — this mirrors its state)."""
+    """Sticky-style brand bar: name + page, live world stats, and a ground-truth state badge. The
+    badge is read-only (drawn as a dot, not a switch, so it doesn't invite a click): the real
+    control is the sidebar's "show ground truth" checkbox."""
     knob = "on" if show_truth else "off"
-    state = "ground truth" if show_truth else "blind mode"
+    state = "ground truth shown" if show_truth else "blind mode"
+    tip = "Toggle with “show ground truth” in the sidebar"
     _md(
         '<div class="ath-topbar">'
         '<div class="ath-brand"><span class="dot"></span>'
@@ -278,7 +314,7 @@ def top_bar(n_accounts: int, n_fraud: int, show_truth: bool, page: str = "invest
         f'<span class="sub">{_esc(page)}</span></div>'
         '<div class="meta">'
         f'<span class="mono" style="font-size:12px;color:#8b929c;">{n_accounts:,} accounts · {n_fraud} fraud</span>'
-        f'<span class="ath-pill"><span class="knob {knob}"><i></i></span>{state}</span>'
+        f'<span class="ath-pill" title="{tip}"><span class="d {knob}"></span>{state}</span>'
         "</div></div>"
     )
 

@@ -27,6 +27,10 @@ PRESETS = ["default", "smoke"]
 # Operator-concurrency dial (lock-step worlds). "off" = the normal world.
 CONCURRENCY_OPTS: dict[str, int | None] = {"off": None, "4": 4, "12": 12, "30": 30, "60": 60}
 
+AUTHOR = "Stephen Corgiat"
+SITE_URL = "https://stephen-corgiat.github.io/fraud-ring-detection/"
+REPO_URL = "https://github.com/stephen-corgiat/fraud-ring-detection"
+
 
 def _cli_args() -> tuple[str, bool]:
     p = argparse.ArgumentParser()
@@ -99,11 +103,12 @@ def _world_sidebar(base_dir: str, rebuild: bool) -> None:
 
 
 def main() -> None:
-    st.set_page_config(page_title="fraudrings", layout="wide")
+    st.set_page_config(page_title="fraudrings · fraud-ring detection demo", layout="wide",
+                       menu_items={"About": f"Fraud-ring detection demo by {AUTHOR}. {SITE_URL}"})
     T.inject()
     T.register_plotly_template()
-    if HOSTED:
-        st.caption("Public demo on simulated data. Your labels stay in this tab.")
+    if HOSTED:  # visitors arrive cold (often from a search or a shared link): say what this is
+        T.intro(SITE_URL, REPO_URL)
     base_dir, rebuild = _cli_args()
 
     pages = {
@@ -114,6 +119,8 @@ def main() -> None:
     nav = st.navigation(list(pages.values()))
     _world_sidebar(base_dir, rebuild)
     nav.run()
+    with st.sidebar:  # after the page, so it lands below the page's own sidebar controls
+        T.credit(AUTHOR, SITE_URL, REPO_URL)
 
 
 if __name__ == "__main__":
