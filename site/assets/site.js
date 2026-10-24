@@ -30,12 +30,12 @@
   // If a chart can't be drawn (CDN blocked, bad JSON), show the PNG kept in <noscript> instead.
   function fallback(fig) {
     fig.dataset.state = 'failed';
-    var ns = fig.querySelector('noscript');
-    if (!ns) return;
-    var holder = document.createElement('div');
-    holder.innerHTML = ns.textContent;
-    var img = holder.firstChild;
-    if (img) { img.className = 'zoom'; fig.insertBefore(img, fig.firstChild); }
+    if (!fig.dataset.fallbackSrc) return;
+    var img = document.createElement('img');
+    img.src = fig.dataset.fallbackSrc;
+    img.alt = fig.dataset.fallbackAlt || '';
+    img.className = 'zoom';
+    fig.insertBefore(img, fig.firstChild);
   }
 
   function render(fig) {
