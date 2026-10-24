@@ -118,7 +118,7 @@ def test_lurker_segment_is_benign_aged_and_funnel_truncated(tmp_path) -> None:
     assert lr.height == nlur
     assert (~lr["is_fraud"]).all() and lr["ring_id"].is_null().all()  # benign
     con = build_db(ep, cfg.engine, db_path=os.path.join(d, "a.duckdb"))
-    feats = con.execute(
+    feats = con.sql(
         "SELECT account_id, search_rate, save_rate, account_age_days FROM account_features"
     ).pl()
     lf = feats.filter(pl.col("account_id").is_in(list(lurkers)))
@@ -148,10 +148,10 @@ def test_enrichment_rng_is_isolated_from_the_core_media_stream(tmp_path) -> None
     old_basket = list(cfg_a.engine.behavioral_features)
     sel = "account_id, " + ", ".join(old_basket)
     where = f"WHERE account_id < {nl} OR account_id >= {nl + nlur}"
-    ca = build_db(ep_a, cfg_a.engine, db_path=os.path.join(da, "a.duckdb")).execute(
+    ca = build_db(ep_a, cfg_a.engine, db_path=os.path.join(da, "a.duckdb")).sql(
         f"SELECT {sel} FROM account_features {where} ORDER BY account_id"
     ).pl()
-    cb = build_db(ep_b, cfg_b.engine, db_path=os.path.join(db, "b.duckdb")).execute(
+    cb = build_db(ep_b, cfg_b.engine, db_path=os.path.join(db, "b.duckdb")).sql(
         f"SELECT {sel} FROM account_features {where} ORDER BY account_id"
     ).pl()
     assert ca.equals(cb), "the old behavioral basket leaked an enrichment knob"
@@ -164,7 +164,7 @@ def test_actionmix_features_separate_naive_ring_from_benign(tmp_path) -> None:
     gt = pl.read_parquet(gp)
     con = build_db(ep, cfg.engine, db_path=os.path.join(d, "a.duckdb"))
     cols = ["completion_rate", "search_rate", "save_rate", "funnel_completeness", "account_age_days"]
-    feats = con.execute(f"SELECT account_id, {', '.join(cols)} FROM account_features").pl()
+    feats = con.sql(f"SELECT account_id, {', '.join(cols)} FROM account_features").pl()
     j = feats.join(gt.select(["account_id", "is_fraud"]), on="account_id")
     ring = j.filter(pl.col("is_fraud"))
     legit = j.filter((~pl.col("is_fraud")) & (pl.col("account_id") < cfg.sim.n_legit))
@@ -183,7 +183,7 @@ def test_evasion_convergence_fades_the_action_mix_tell(tmp_path) -> None:
         cfg, ep, gp, d = _world(tmp_path / level, level=level)
         gt = pl.read_parquet(gp)
         con = build_db(ep, cfg.engine, db_path=os.path.join(d, "a.duckdb"))
-        f = con.execute(
+        f = con.sql(
             "SELECT account_id, funnel_completeness, account_age_days FROM account_features"
         ).pl().join(gt.select(["account_id", "is_fraud"]), on="account_id")
         ring = f.filter(pl.col("is_fraud"))
