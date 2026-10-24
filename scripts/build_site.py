@@ -178,7 +178,8 @@ class Site:
         fb = html.escape(fallback_url)
         alt = html.escape(caption, quote=True)
         return (
-            f'<figure class="chart" data-chart="{name}" data-src="{src_json}" data-fallback-src="{fb}" data-fallback-alt="{alt}">'
+            f'<figure class="chart" data-chart="{name}" data-src="{src_json}" '
+            f'data-fallback-src="{fb}" data-fallback-alt="{alt}">'
             f'<noscript><img src="{fb}" alt="{alt}"></noscript>'
             f"<figcaption>{html.escape(caption)}</figcaption></figure>\n"
         )
