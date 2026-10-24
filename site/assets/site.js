@@ -32,10 +32,14 @@
     fig.dataset.state = 'failed';
     var ns = fig.querySelector('noscript');
     if (!ns) return;
-    var holder = document.createElement('div');
-    holder.innerHTML = ns.textContent;
-    var img = holder.firstChild;
-    if (img) { img.className = 'zoom'; fig.insertBefore(img, fig.firstChild); }
+    // Parse in an inert document and copy only src/alt, so no markup reaches the live DOM.
+    var parsed = new DOMParser().parseFromString(ns.textContent, 'text/html').querySelector('img');
+    if (!parsed) return;
+    var img = document.createElement('img');
+    img.src = parsed.getAttribute('src') || '';
+    img.alt = parsed.getAttribute('alt') || '';
+    img.className = 'zoom';
+    fig.insertBefore(img, fig.firstChild);
   }
 
   function render(fig) {
