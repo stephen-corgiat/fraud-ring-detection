@@ -30,14 +30,10 @@
   // If a chart can't be drawn (CDN blocked, bad JSON), show the PNG kept in <noscript> instead.
   function fallback(fig) {
     fig.dataset.state = 'failed';
-    var ns = fig.querySelector('noscript');
-    if (!ns) return;
-    // Parse in an inert document and copy only src/alt, so no markup reaches the live DOM.
-    var parsed = new DOMParser().parseFromString(ns.textContent, 'text/html').querySelector('img');
-    if (!parsed) return;
+    if (!fig.dataset.fallbackSrc) return;
     var img = document.createElement('img');
-    img.src = parsed.getAttribute('src') || '';
-    img.alt = parsed.getAttribute('alt') || '';
+    img.src = fig.dataset.fallbackSrc;
+    img.alt = fig.dataset.fallbackAlt || '';
     img.className = 'zoom';
     fig.insertBefore(img, fig.firstChild);
   }
